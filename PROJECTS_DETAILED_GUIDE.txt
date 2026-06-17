@@ -1,0 +1,991 @@
+================================================================================
+COMPLETE PROJECTS GUIDE — DETAILED POINT-WISE DOCUMENTATION
+================================================================================
+
+Workspace location : untitled folder
+Document purpose   : Full technical understanding for team onboarding
+Last updated       : 2026-06-17
+
+IMPORTANT: All four projects are INDEPENDENT. Do not share code, .env files,
+or business logic between them.
+
+================================================================================
+TABLE OF CONTENTS
+================================================================================
+
+  PART A  — PROJECT 1: TRANSACTION LEDGER (Basics Eval)
+  PART B  — PROJECT 2: CURRENCY CONVERTER (Intermediate Eval)
+  PART C  — PROJECT 3: FRAUD SCORE SYSTEM (Advanced Eval)
+  PART E  — PROJECT 4: SCREEN SCRAPER OPS (Advanced Eval + Live API)
+  PART D  — COMPARISON AND TEAM GUIDELINES
+
+================================================================================
+PART A — PROJECT 1: TRANSACTION LEDGER
+================================================================================
+
+Folder name     : transaction-ledger/
+Eval tier       : Basics (B1, B2, B3, B4)
+Primary stack   : Python 3.11+ | FastAPI | Pydantic | pytest
+Default port    : 8000
+Git remote      : Local only (not on GitHub)
+Purpose         : Learn to read repos, build a small FastAPI service with tests
+
+--------------------------------------------------------------------------------
+A.1  WHAT THIS PROJECT DOES
+--------------------------------------------------------------------------------
+
+  1. Simulates a simple bank/account ledger system.
+  2. Users (accounts) can receive CREDIT and DEBIT transactions.
+  3. Balance is calculated per account from all past transactions.
+  4. All data lives in memory — no real database connected yet.
+  5. Swagger UI available at http://127.0.0.1:8000/docs
+  6. React dashboard (optional dev) at http://127.0.0.1:5173 — users, txns, balances
+  7. API routes are prefixed with /api (e.g. GET /api/users)
+
+--------------------------------------------------------------------------------
+A.2  FOLDER STRUCTURE
+--------------------------------------------------------------------------------
+
+  transaction-ledger/
+  ├── app/
+  │   ├── main.py          → FastAPI routes (entry point, /api prefix)
+  │   ├── models.py        → Pydantic schemas (validation)
+  │   ├── store.py         → Business logic + in-memory storage
+  │   └── config.py        → Loads settings from .env
+  ├── frontend/            → React dashboard (Vite, port 5173 in dev)
+  ├── tests/
+  │   └── test_api.py      → Automated API tests
+  ├── docs/eval/basics/    → B1, B2, B3 eval artifacts
+  ├── docs/eval/intermediate/ → I1–I3 style docs
+  ├── requirements.txt     → Python dependencies
+  ├── Dockerfile           → API + built React UI on port 8000
+  ├── .env                 → Secrets (NEVER commit)
+  ├── .env.example         → Template for .env
+  ├── .gitignore           → Ignores .env, .venv, __pycache__
+  └── README.md
+
+--------------------------------------------------------------------------------
+A.3  DATA MODEL (ENTITIES)
+--------------------------------------------------------------------------------
+
+  ENTITY: User
+    - Stored in: UserStore._users (Python dict, key = user id)
+    - Fields:
+        id      (int)     Primary key
+        name    (str)     Full name
+        email   (str)     Email address
+    - Seeded users on startup:
+        id=1  Alice Johnson   alice@example.com
+        id=2  Bob Smith       bob@example.com
+        id=3  Carol Lee       carol@example.com
+
+  ENTITY: Transaction
+    - Stored in: TransactionStore._transactions (Python list)
+    - Fields:
+        id           (int)       Auto-generated transaction number
+        account_id   (int)       Which user owns this transaction
+        amount       (float)     Must be > 0
+        type         (enum)      "credit" or "debit"
+        description  (str|null)  Optional note, max 200 chars
+        created_at   (datetime)  UTC timestamp
+
+  REQUEST DTO: TransactionCreate (POST body)
+    - id           (int)     Account/user id (NOT transaction id)
+    - amount       (float)   Must be > 0, rejects NaN
+    - type         (enum)    credit | debit
+    - description  (str)     Optional
+
+  RESPONSE DTO: BalanceResponse (GET /balance)
+    - id                  (int)    Account id
+    - balance             (float)  Current balance
+    - transaction_count   (int)    Number of transactions for account
+
+--------------------------------------------------------------------------------
+A.4  BUSINESS RULES
+--------------------------------------------------------------------------------
+
+  1. Every transaction must belong to a valid user (id 1, 2, or 3).
+  2. Unknown user id returns HTTP 404.
+  3. Invalid amount (negative, zero, NaN) returns HTTP 422.
+  4. DEBIT transactions that would make balance negative return HTTP 400.
+  5. CREDIT transactions always allowed (if user exists).
+  6. Balance = sum(credits) - sum(debits) for that account.
+  7. Data is lost when server restarts (in-memory only).
+
+--------------------------------------------------------------------------------
+A.5  API ENDPOINTS (COMPLETE LIST — all under /api)
+--------------------------------------------------------------------------------
+
+  GET  /api/users
+       → Returns list of all seeded users
+       → Response: [{ id, name, email }, ...]
+
+  GET  /api/users/{id}
+       → Returns one user by id
+       → 404 if user not found
+
+  POST /api/transactions
+       → Creates a new transaction
+       → Body: { "id": 1, "amount": 100, "type": "credit", "description": "..." }
+       → Response 201: full Transaction object
+       → Note: "id" in body = account id, not transaction id
+
+  GET  /api/transactions
+       → Lists all transactions
+       → Optional query: ?id=1  (filter by account)
+       → Response: [{ id, account_id, amount, type, ... }, ...]
+
+  GET  /api/balance?id=1
+       → Returns balance for account id (required query param)
+       → Response: { "id": 1, "balance": 70.0, "transaction_count": 2 }
+
+  GET  /api/health
+       → Returns { "status": "ok", "environment": "development" }
+
+--------------------------------------------------------------------------------
+A.6  ENVIRONMENT VARIABLES (.env)
+--------------------------------------------------------------------------------
+
+  APP_HOST=127.0.0.1
+  APP_PORT=8000
+  ENVIRONMENT=development
+  DEBUG=true
+  SECRET_KEY=...              (for future auth)
+  API_KEY=...                 (for future auth)
+
+  PostgreSQL (configured but NOT used by app yet):
+  DB_HOST=localhost
+  DB_PORT=5432
+  DB_NAME=postgres
+  DB_USER=postgres
+  DB_PASSWORD=...
+  DATABASE_URL=postgresql://postgres:...@localhost:5432/postgres
+
+  Setup: cp .env.example .env  then edit values
+
+--------------------------------------------------------------------------------
+A.7  HOW TO INSTALL AND RUN
+--------------------------------------------------------------------------------
+
+  Step 1 — Install
+    cd transaction-ledger
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+    cp .env.example .env
+
+  Step 2 — Run server
+    uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+
+  Step 3 — Open Swagger
+    http://127.0.0.1:8000/docs
+
+  Step 4 — Run tests
+    pytest -v
+    Expected: 8 passed
+
+  Step 5 — Docker (optional)
+    docker build -t transaction-ledger .
+    docker run -p 8000:8000 transaction-ledger
+
+--------------------------------------------------------------------------------
+A.8  EXAMPLE API FLOW
+--------------------------------------------------------------------------------
+
+  1. List users:
+     curl http://127.0.0.1:8000/api/users
+
+  2. Deposit 100 for account 1:
+     curl -X POST http://127.0.0.1:8000/api/transactions \
+       -H "Content-Type: application/json" \
+       -d '{"id":1,"amount":100,"type":"credit","description":"Deposit"}'
+
+  3. Withdraw 30 for account 1:
+     curl -X POST http://127.0.0.1:8000/api/transactions \
+       -H "Content-Type: application/json" \
+       -d '{"id":1,"amount":30,"type":"debit","description":"Purchase"}'
+
+  4. Check balance:
+     curl "http://127.0.0.1:8000/api/balance?id=1"
+     → { "id": 1, "balance": 70.0, "transaction_count": 2 }
+
+--------------------------------------------------------------------------------
+A.9  TESTS (8 TOTAL)
+--------------------------------------------------------------------------------
+
+  1. test_create_and_list_transactions
+  2. test_balance_reflects_credits_and_debits
+  3. test_balance_is_scoped_per_account
+  4. test_rejects_unknown_user
+  5. test_list_users
+  6. test_rejects_debit_exceeding_balance
+  7. test_rejects_invalid_transaction
+  8. test_empty_balance
+
+--------------------------------------------------------------------------------
+A.10  EVAL ARTIFACTS IN THIS PROJECT
+--------------------------------------------------------------------------------
+
+  docs/eval/basics/B1-artifact-inventory.md
+    → Repo artifact inventory (Basics tier)
+
+  docs/eval/basics/B2-api-endpoint-map.md
+    → Full API + frontend route map
+
+  docs/eval/basics/B3-test-discovery.md
+    → How tests are organized and run
+
+  docs/eval/intermediate/I1-er-diagram.md
+    → Entity-relationship diagram of User and Transaction
+
+  docs/eval/intermediate/I2-flow-trace.md
+    → Step-by-step trace of POST /api/transactions
+
+  docs/eval/intermediate/I3-safe-change.md
+    → Debit overdraft guard + test + risk assessment
+
+
+================================================================================
+PART B — PROJECT 2: CURRENCY CONVERTER
+================================================================================
+
+Folder name     : currency-converter/
+Eval tier       : Intermediate (I1, I2, I3, I4, I5, I6)
+Primary stack   : Python FastAPI + Node.js CLI
+Default port    : 8001 (service)
+Git remote      : Local only (git initialized locally)
+Purpose         : Polyglot system, Docker, bug diagnosis, flow analysis
+
+--------------------------------------------------------------------------------
+B.1  WHAT THIS PROJECT DOES
+--------------------------------------------------------------------------------
+
+  1. FastAPI service converts money between USD, EUR, and GBP.
+  2. Exchange rates are hardcoded in Python (no live market data).
+  3. Node.js CLI client calls the service over HTTP.
+  4. Validates input (positive amount, valid currencies).
+  5. Rejects same-currency conversion (e.g. USD to USD).
+  6. Can run inside Docker container on port 8001.
+  7. React frontend (port 5173) — I1 ER diagram page and converter UI.
+
+--------------------------------------------------------------------------------
+B.2  FOLDER STRUCTURE
+--------------------------------------------------------------------------------
+
+  currency-converter/
+  ├── service/                    → Python FastAPI backend
+  │   ├── app/
+  │   │   ├── main.py             → Routes: /convert, /health
+  │   │   ├── models.py           → ConvertRequest, ConvertResponse
+  │   │   ├── converter.py        → Hardcoded RATES dict + logic
+  │   │   └── config.py           → Settings from .env
+  │   ├── tests/test_convert.py   → 4 tests
+  │   └── requirements.txt
+  ├── client/                     → Node.js CLI
+  │   ├── cli.js                  → Command-line client
+  │   ├── verify.js               → End-to-end verification script
+  │   └── package.json
+  ├── frontend/                   → React (ER diagram, converter pages)
+  ├── docs/eval/intermediate/     → I1 through I6 eval docs
+  ├── Dockerfile                  → Container for service
+  ├── .env.example
+  ├── .gitignore
+  └── README.md
+
+--------------------------------------------------------------------------------
+B.3  DATA MODEL
+--------------------------------------------------------------------------------
+
+  REQUEST (POST /convert):
+    {
+      "amount": 100,
+      "from": "USD",
+      "to": "EUR"
+    }
+
+  RESPONSE:
+    {
+      "amount": 100,
+      "from": "USD",
+      "to": "EUR",
+      "converted_amount": 92.0,
+      "rate": 0.92
+    }
+
+  SUPPORTED CURRENCIES: USD, EUR, GBP
+
+--------------------------------------------------------------------------------
+B.4  HARDCODED EXCHANGE RATES
+--------------------------------------------------------------------------------
+
+  USD → EUR : 0.92
+  EUR → USD : 1.09
+  USD → GBP : 0.79
+  GBP → USD : 1.27
+  EUR → GBP : 0.86
+  GBP → EUR : 1.16
+
+  Source file: service/app/converter.py
+
+--------------------------------------------------------------------------------
+B.5  API ENDPOINTS
+--------------------------------------------------------------------------------
+
+  POST /convert
+       → Converts amount between currencies
+       → Body: { "amount": 100, "from": "USD", "to": "EUR" }
+       → 422 if invalid currency or negative amount
+       → 400 if from == to (same currency)
+
+  GET  /health
+       → { "status": "ok", "environment": "development" }
+
+--------------------------------------------------------------------------------
+B.6  NODE.JS CLI CLIENT
+--------------------------------------------------------------------------------
+
+  Usage:
+    node cli.js --amount 100 --from USD --to EUR
+
+  Optional:
+    node cli.js --amount 100 --from USD --to EUR --url http://127.0.0.1:8001
+
+  Output example:
+    100 USD = 92 EUR (rate: 0.92)
+
+  Verification script:
+    npm run verify   (requires service running)
+
+  No npm install needed — uses native Node.js fetch (Node 18+)
+
+--------------------------------------------------------------------------------
+B.7  HOW TO INSTALL AND RUN (TWO TERMINALS)
+--------------------------------------------------------------------------------
+
+  Terminal 1 — Start service:
+    cd currency-converter/service
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+    uvicorn app.main:app --reload --port 8001
+
+  Terminal 2 — Run client:
+    cd currency-converter/client
+    node cli.js --amount 100 --from USD --to EUR
+
+  Run tests:
+    cd currency-converter/service
+    source .venv/bin/activate
+    pytest -v
+    Expected: 4 passed
+
+  Docker:
+    cd currency-converter
+    docker build -t currency-converter .
+    docker run -p 8001:8001 currency-converter
+    curl http://127.0.0.1:8001/health
+
+--------------------------------------------------------------------------------
+B.8  TESTS (4 TOTAL — SERVICE)
+--------------------------------------------------------------------------------
+
+  1. test_convert_usd_to_eur        → 100 USD = 92 EUR
+  2. test_rejects_invalid_currency  → JPY returns 422
+  3. test_rejects_invalid_amount     → negative amount returns 422
+  4. test_rejects_same_currency      → USD to USD returns 400
+
+--------------------------------------------------------------------------------
+B.9  GIT BRANCHES (FOR EVAL PRACTICE)
+--------------------------------------------------------------------------------
+
+  main                  → Clean working code
+  eval/i6-seeded-bug    → Contains intentional balance/sign bug
+  eval/i6-fix           → Bug fixed, all tests green
+
+  Purpose: practice bug diagnosis workflow (I6 eval task)
+
+--------------------------------------------------------------------------------
+B.10  EVAL ARTIFACTS (ALL I1–I6)
+--------------------------------------------------------------------------------
+
+  I1-er-diagram.md      → ER diagram of Currency, ConvertRequest, RATES
+  I2-flow-trace.md      → POST /convert end-to-end flow + sequence diagram
+  I3-safe-change.md     → Same-currency rejection guard
+  I4-polyglot.md        → FastAPI + Node two-component system proof
+  I5-docker.md          → Docker build and curl proof
+  I6-bug-diagnosis.md   → Seeded bug, root cause, fix, verification
+
+
+================================================================================
+PART C — PROJECT 3: FRAUD SCORE SYSTEM
+================================================================================
+
+Folder name     : Fraud-score-system/
+Eval tier       : Advanced (A1, A2, A3, A4, A5, A6)
+Primary stack   : Python FastAPI + Node.js worker + Rust CLI
+Default port    : 8002 (API)
+GitHub remote   : https://github.com/Aditya9598/Fraud-score-system.git
+Purpose         : Multi-language pipeline, parallel git worktrees, code review
+
+--------------------------------------------------------------------------------
+C.1  WHAT THIS PROJECT DOES
+--------------------------------------------------------------------------------
+
+  1. Accepts financial transactions via FastAPI.
+  2. Stores them with status "pending".
+  3. Node.js worker polls pending queue every 2 seconds.
+  4. Worker claims transaction (status → "processing").
+  5. Worker sends transaction JSON to Rust scorer via STDIN pipe.
+  6. Rust scorer calculates fraud risk score (0–100).
+  7. Worker posts score back to API (status → "scored").
+  8. If scoring fails, status → "failed".
+  9. All payloads use contract_version "1.0" to prevent schema drift.
+
+--------------------------------------------------------------------------------
+C.2  FOLDER STRUCTURE
+--------------------------------------------------------------------------------
+
+  Fraud-score-system/
+  ├── shared/
+  │   └── contract.json         → Shared JSON schema v1.0 (source of truth)
+  ├── api/                      → Python FastAPI ingestion service
+  │   ├── app/
+  │   │   ├── main.py           → All HTTP routes
+  │   │   ├── models.py         → Transaction, ScoreResult schemas
+  │   │   ├── store.py          → In-memory store + status logic
+  │   │   └── config.py
+  │   ├── tests/test_api.py     → 4 tests
+  │   └── requirements.txt      → Pinned exact versions (A4)
+  ├── worker/                   → Node.js background processor
+  │   ├── worker.js             → Poll loop + spawn scorer
+  │   ├── test/worker.test.js   → Stdin pipe safety test
+  │   └── package.json
+  ├── scorer/                   → Rust fraud scoring engine
+  │   ├── src/
+  │   │   ├── lib.rs            → Scoring rules + unit tests
+  │   │   └── main.rs           → CLI: reads stdin, writes stdout
+  │   ├── Cargo.toml
+  │   └── Cargo.lock
+  ├── scripts/
+  │   ├── e2e.sh                → Full pipeline integration test
+  │   └── bench_scorer.sh       → Performance benchmark (A6)
+  ├── docs/eval/advanced/       → A1 through A6 eval docs
+  ├── Makefile                  → make test | make e2e
+  ├── .env.example
+  ├── .gitignore
+  └── README.md
+
+--------------------------------------------------------------------------------
+C.3  SHARED CONTRACT (contract.json v1.0)
+--------------------------------------------------------------------------------
+
+  TRANSACTION INGEST (POST /transactions body):
+    {
+      "contract_version": "1.0",
+      "transaction_id": "uuid-string",
+      "user_id": 1,
+      "amount": 500.0,
+      "type": "debit",
+      "merchant": "acme"
+    }
+
+  STORED TRANSACTION (internal + GET response):
+    Same as above PLUS:
+      "status": "pending" | "processing" | "scored" | "failed"
+      "score": { ... }   (only when status = scored)
+
+  SCORE RESULT (worker posts to API):
+    {
+      "contract_version": "1.0",
+      "transaction_id": "uuid-string",
+      "risk_score": 65,
+      "risk_level": "medium",
+      "reasons": ["high_amount", "large_debit"]
+    }
+
+  WHY contract_version?
+    When multiple developers/agents work in parallel (A1/A2 eval),
+    versioning prevents one team from changing the payload shape
+    without others knowing.
+
+--------------------------------------------------------------------------------
+C.4  STATUS LIFECYCLE
+--------------------------------------------------------------------------------
+
+  pending     → Transaction just ingested via POST /transactions
+  processing  → Worker claimed it (PATCH /transactions/{id}/claim)
+  scored      → Worker posted score (POST /transactions/{id}/score)
+  failed      → Scoring error or invalid contract (POST /transactions/{id}/fail)
+
+  Why this matters:
+    - Without status, worker crash would re-process same record forever
+    - Enables monitoring: how many pending vs failed?
+    - Required for A6 performance profiling
+
+--------------------------------------------------------------------------------
+C.5  API ENDPOINTS (COMPLETE LIST)
+--------------------------------------------------------------------------------
+
+  POST /transactions
+       → Ingest new transaction, sets status = pending
+       → Returns 201 with full transaction object
+
+  GET  /transactions/pending
+       → Returns all transactions with status = pending
+       → Used by worker to poll for work
+       → NOTE: registered BEFORE /{id} route (important for routing)
+
+  GET  /transactions/{transaction_id}
+       → Get one transaction including score if scored
+
+  PATCH /transactions/{transaction_id}/claim
+       → Worker sets status pending → processing
+       → 409 if not in pending state
+
+  POST /transactions/{transaction_id}/score
+       → Worker submits ScoreResult, sets status → scored
+       → 409 if not in processing state
+
+  POST /transactions/{transaction_id}/fail
+       → Sets status → failed
+
+  GET  /health
+       → { "status": "ok", "environment": "development" }
+
+--------------------------------------------------------------------------------
+C.6  RUST SCORER — FRAUD RULES
+--------------------------------------------------------------------------------
+
+  Input:  JSON on STDIN
+  Command: echo '{json}' | ./scorer/target/debug/scorer score
+  Output: JSON on STDOUT
+
+  Scoring rules (scorer/src/lib.rs):
+    amount >= 1000              → +40 points, reason: "high_amount"
+    amount >= 500               → +20 points, reason: "medium_amount"
+    type=debit AND amount>=300  → +25 points, reason: "large_debit"
+    Maximum score               → capped at 100
+
+  Risk levels:
+    score 0–39   → "low"
+    score 40–69  → "medium"
+    score 70–100 → "high"
+
+  Example:
+    Input:  { amount: 1000, type: "debit", ... }
+    Score:  40 + 25 = 65 → risk_level "medium"
+
+  Tests: cargo test (4 tests including throughput benchmark)
+
+--------------------------------------------------------------------------------
+C.7  NODE.JS WORKER — HOW IT WORKS
+--------------------------------------------------------------------------------
+
+  1. Loads config from ../.env (API_BASE_URL, SCORER_BIN, timeouts)
+  2. Every 2 seconds (WORKER_POLL_INTERVAL_MS):
+     a. GET /transactions/pending
+     b. For each pending transaction:
+        - Validate contract_version == "1.0"
+        - PATCH /claim  (status → processing)
+        - spawn scorer with STDIN pipe (SAFE — no shell injection)
+        - POST /score with result (status → scored)
+        - On error: POST /fail (status → failed)
+  3. Run once mode: node worker.js --once
+
+  SAFE spawn pattern (main branch):
+    spawn(scorerBin, ["score"], { stdio: ["pipe", "pipe", "pipe"] })
+    child.stdin.write(JSON.stringify(transaction))
+
+  UNSAFE pattern (review/agent-pr-seeded branch — for A5 eval only):
+    exec(`scorer score --input '${JSON.stringify(transaction)}'`)
+    → Shell injection risk — DO NOT use in production
+
+--------------------------------------------------------------------------------
+C.8  HOW TO INSTALL AND RUN (THREE TERMINALS)
+--------------------------------------------------------------------------------
+
+  Prerequisites:
+    - Python 3.11+
+    - Node.js 18+
+    - Rust (cargo) — install: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+  One-time setup:
+    cd Fraud-score-system
+    source "$HOME/.cargo/env"
+    cd scorer && cargo build && cd ..
+    cd api && python3 -m venv .venv && source .venv/bin/activate
+    pip install -r requirements.txt && cd ..
+
+  Terminal 1 — API:
+    cd Fraud-score-system/api
+    source .venv/bin/activate
+    uvicorn app.main:app --reload --port 8002
+
+  Terminal 2 — Worker:
+    cd Fraud-score-system/worker
+    node worker.js
+
+  Terminal 3 — Submit transaction:
+    curl -X POST http://127.0.0.1:8002/transactions \
+      -H "Content-Type: application/json" \
+      -d '{
+        "contract_version":"1.0",
+        "transaction_id":"tx-001",
+        "user_id":1,
+        "amount":1000,
+        "type":"debit",
+        "merchant":"acme"
+      }'
+
+  Watch worker terminal — it will process and score automatically.
+
+  Verify result:
+    curl http://127.0.0.1:8002/transactions/tx-001
+    → status: "scored", score.risk_score: 65
+
+--------------------------------------------------------------------------------
+C.9  MAKEFILE COMMANDS
+--------------------------------------------------------------------------------
+
+  make setup-api    → pip install api dependencies
+  make test-api     → pytest -v (4 tests)
+  make test-worker  → npm test (Node tests)
+  make test-scorer  → cargo test (4 tests)
+  make test         → runs all three above
+  make e2e          → full pipeline integration (scripts/e2e.sh)
+
+--------------------------------------------------------------------------------
+C.10  GIT BRANCHES
+--------------------------------------------------------------------------------
+
+  main                     → Production-safe code (stdin pipe, no secrets)
+  lane/scorer              → Parallel worktree: Rust scorer only
+  lane/api                 → Parallel worktree: FastAPI only
+  integration/a3           → Merge target before main
+  review/agent-pr-seeded   → Intentional security bugs for A5 code review
+
+  Worktree paths (local):
+    ../Fraud-score-system-scorer
+    ../Fraud-score-system-api
+
+  Merge order used:
+    lane/scorer → lane/api → lane/worker → integration/a3 → main
+
+--------------------------------------------------------------------------------
+C.11  TESTS SUMMARY
+--------------------------------------------------------------------------------
+
+  API (pytest):     4 tests — ingest, lifecycle, contract version, pending filter
+  Scorer (cargo):   4 tests — scoring rules, contract rejection, throughput bench
+  Worker (npm):     2 tests — stdin pipe safety (1 skipped integration)
+  E2E (script):     scripts/e2e.sh — full ingest → worker → score → verify
+
+--------------------------------------------------------------------------------
+C.12  EVAL ARTIFACTS (ALL A1–A6)
+--------------------------------------------------------------------------------
+
+  A1-parallel-plan.md    → Task decomposition, agent prompts, merge order
+  A2-worktrees.md        → Actual git worktree commands and merge proof
+  A4-modernization.md    → Pinned Python deps, evidence, rollback steps
+  A5-code-review.md      → Security review of agent-pr-seeded branch
+  A6-performance.md      → Scorer benchmark: 2.61M scores/sec after optimization
+
+--------------------------------------------------------------------------------
+C.13  ENVIRONMENT VARIABLES
+--------------------------------------------------------------------------------
+
+  APP_HOST=127.0.0.1
+  APP_PORT=8002
+  API_BASE_URL=http://127.0.0.1:8002
+  SCORER_BIN=../scorer/target/debug/scorer
+  WORKER_POLL_INTERVAL_MS=2000
+  WORKER_SCORER_TIMEOUT_MS=5000
+  SECRET_KEY=...
+  API_KEY=...
+
+
+================================================================================
+PART E — PROJECT 4: SCREEN SCRAPER OPS
+================================================================================
+
+Folder name     : screen-scraper/
+Eval tier       : Advanced (A1–A6) — live Web Scraping API + eval dashboard
+Primary stack   : React dashboard + Python FastAPI gateway + Node worker + Rust
+Ports           : 5173 (React dev), 8003 (scorer-gateway local A3)
+Live API        : new-scrapper-provider-dev (VPN) — NOT reimplemented locally
+Git remote      : Local only (git init in workspace; worktrees ../ss-pipeline, ../ss-audio)
+Purpose         : Ops dashboard for production scraper API + polyglot scoring eval
+
+--------------------------------------------------------------------------------
+E.1  WHAT THIS PROJECT DOES
+--------------------------------------------------------------------------------
+
+  1. React ops dashboard reads the LIVE Web Scraping API (RSS, Prefect, Opening
+     Bell, market status, news search, etc.) via Vite proxy on VPN.
+  2. Per-endpoint status: green (working), red (known 500s), yellow (slow POSTs).
+  3. Pages: Ops Pipeline (React Flow), API Catalog (Try-it), Analytics, Eval A1–A6.
+  4. Local polyglot add-on (A3 only): scorer-gateway + Node worker + Rust scorer
+     enriches news articles with relevance/risk scores — does NOT replace scraper API.
+  5. Eval hub shows What/How for each A1–A6 task with clickable markdown artifacts.
+
+--------------------------------------------------------------------------------
+E.2  FOLDER STRUCTURE
+--------------------------------------------------------------------------------
+
+  screen-scraper/
+  ├── shared/
+  │   ├── contract.json         → Polyglot contract v1.0 (article jobs)
+  │   └── openapi.json          → Exported from live scraper /openapi.json
+  ├── scorer-gateway/           → FastAPI job queue (port 8003) — A3 only
+  │   ├── app/main.py           → POST /jobs, pending, claim, score
+  │   ├── app/text_analysis.py  → normalize_text + LRU cache (A6)
+  │   └── tests/
+  ├── worker/                   → Node poller + optional live news ingest
+  ├── scorer/                   → Rust CLI: article JSON → relevance/risk score
+  ├── frontend/                 → React ops dashboard + eval UI
+  │   ├── src/api/scraperClient.ts
+  │   ├── public/eval/advanced/ → Markdown artifacts for browser viewing
+  │   └── vite proxy → live scraper API
+  ├── scripts/e2e.sh, bench_normalize.py
+  ├── docs/eval/advanced/       → A1–A6 markdown evidence
+  ├── .github/workflows/test.yml  → CI (A4)
+  ├── Makefile
+  └── README.md
+
+--------------------------------------------------------------------------------
+E.3  LIVE SCRAPER API (DASHBOARD DATA SOURCE)
+--------------------------------------------------------------------------------
+
+  Base URL (dev):
+    https://new-scrapper-provider-dev.internal.production.gm.paytmmoney.com
+
+  Dashboard config (frontend/.env):
+    VITE_SCRAPER_API_BASE_URL=... (above)
+    VITE_USE_PROXY=true           → dev server proxies /scraper-api
+
+  Key route groups (dashboard polls / catalogs):
+    RSS, Prefect flows, news search, market status/calendar, market briefing,
+    Opening Bell pipeline, category clustering, user query, email recipients.
+
+  Known red endpoints on dev (show error in UI — do not assume all green):
+    GET  /api/v1/prefect/health
+    GET  /api/v1/category_clustering/statistics
+    POST /api/v1/category_clustering/generate
+    POST /api/v1/market-calendar/sync/nse-holidays
+    POST /api/v1/user_query/faq
+    GET  pipeline/download-audio (404 if audio_path is stale)
+
+  News search requires form body (NOT JSON):
+    POST /api/v1/news/search
+    Content-Type: application/x-www-form-urlencoded
+    query=tata motors&limit=3
+
+--------------------------------------------------------------------------------
+E.4  LOCAL A3 POLYGLOT PIPELINE (scorer-gateway)
+--------------------------------------------------------------------------------
+
+  CONTRACT (shared/contract.json v1.0):
+    article_job: job_id, title, body, source, status
+    score_result: relevance_score, risk_score, reasons
+
+  STATUS LIFECYCLE:
+    pending → processing → scored | failed
+
+  GATEWAY ENDPOINTS (port 8003):
+    POST   /jobs
+    GET    /jobs/pending
+    GET    /jobs/{job_id}
+    PATCH  /jobs/{job_id}/claim
+    POST   /jobs/{job_id}/score
+    POST   /jobs/{job_id}/fail
+    GET    /health
+
+  WORKER:
+    - Polls gateway OR --ingest from live POST /api/v1/news/search
+    - Spawns Rust scorer via stdin pipe (safe)
+    - Posts score back to gateway
+
+  RUST SCORER RULES (article text):
+    Market keywords (nifty, sensex, stock, …) → relevance_score
+    Risk keywords (fraud, scam, war, …)         → risk_score
+    Cached normalize_text for performance (A6)
+
+--------------------------------------------------------------------------------
+E.5  REACT DASHBOARD PAGES
+--------------------------------------------------------------------------------
+
+  http://127.0.0.1:5173/
+    → Home — quick links
+
+  http://127.0.0.1:5173/ops
+    → Pipeline ops — React Flow, per-node probe, market status card
+
+  http://127.0.0.1:5173/apis
+    → API catalog from openapi.json with Try-it buttons
+
+  http://127.0.0.1:5173/analytics
+    → Pipeline timings, audio metrics, A6 cache chart (Recharts)
+
+  http://127.0.0.1:5173/eval/advanced
+    → Eval hub — What/How for A1–A6, links to full guides
+
+  http://127.0.0.1:5173/eval/advanced/A1
+    → Per-task detail + rendered markdown artifact
+
+--------------------------------------------------------------------------------
+E.6  HOW TO INSTALL AND RUN
+--------------------------------------------------------------------------------
+
+  Dashboard (VPN for live data):
+    cd screen-scraper/frontend
+    cp .env.example .env
+    npm install
+    npm run dev
+    → http://127.0.0.1:5173
+
+  A3 polyglot (three terminals):
+    Terminal 1 — gateway:
+      cd screen-scraper/scorer-gateway
+      source .venv/bin/activate
+      uvicorn app.main:app --reload --port 8003
+
+    Terminal 2 — worker:
+      cd screen-scraper/worker
+      node worker.js
+
+    Terminal 3 — optional live ingest:
+      node worker.js --ingest --once && node worker.js --once
+
+  Tests:
+    make test      → gateway pytest + cargo test + npm test
+    make e2e       → full local scoring pipeline
+    make bench     → A6 normalize_text benchmark
+
+--------------------------------------------------------------------------------
+E.7  GIT BRANCHES AND WORKTREES
+--------------------------------------------------------------------------------
+
+  main                         → Integrated dashboard + polyglot stack
+  lane/opening-bell-pipeline   → ../ss-pipeline worktree
+  lane/opening-bell-audio      → ../ss-audio worktree
+  review/agent-pr-seeded       → A5 intentional security bugs (not on main)
+
+  Parallel lanes (A1/A2):
+    pipelineTimings.ts vs audioMetrics.ts — disjoint frontend files
+
+--------------------------------------------------------------------------------
+E.8  EVAL ARTIFACTS (ALL A1–A6)
+--------------------------------------------------------------------------------
+
+  docs/eval/advanced/A1-parallel-plan.md    → Worktree decomposition
+  docs/eval/advanced/A2-worktrees.md        → git worktree commands + merge
+  docs/eval/advanced/A3-polyglot.md         → Local gateway + worker + Rust
+  docs/eval/advanced/A4-modernization.md    → CI + pinned deps
+  docs/eval/advanced/A5-code-review.md        → review/agent-pr-seeded findings
+  docs/eval/advanced/A6-performance.md      → normalize_text cache benchmark
+
+  Also mirrored in frontend/public/eval/advanced/ for clickable UI links.
+
+--------------------------------------------------------------------------------
+E.9  RELATIONSHIP TO OTHER PROJECTS
+--------------------------------------------------------------------------------
+
+  - Independent from transaction-ledger, currency-converter, Fraud-score-system.
+  - Reuses the SAME eval patterns as Fraud-score-system (A1–A6, contract v1.0,
+    worktrees, polyglot pipeline) but dashboard calls LIVE scraper API instead
+    of rebuilding 30+ backend routes locally.
+  - Fraud-score-system scores financial transactions; screen-scraper scores
+    news articles and visualizes scraper ops.
+
+
+================================================================================
+PART D — COMPARISON AND TEAM GUIDELINES
+================================================================================
+
+--------------------------------------------------------------------------------
+D.1  SIDE-BY-SIDE COMPARISON
+--------------------------------------------------------------------------------
+
+  Feature              transaction-ledger   currency-converter   Fraud-score-system   screen-scraper
+  -------------------  -------------------  ------------------   ------------------   --------------
+  Languages            Python               Python + Node        Python+Node+Rust     React+Py+Node+Rust
+  API port             8000                 8001                 8002                 8003 (local only)
+  UI port              5173 (React)         5173 (React)         —                    5173 (React)
+  Live external API    No                   No                   No                   Yes (scraper dev)
+  Components           API + React UI       API + CLI + React    API+Worker+Scorer    Dashboard+Gateway+Worker+Scorer
+  Data storage         In-memory            Stateless            In-memory + status   Gateway in-memory
+  Contract version     No                   No                   Yes (v1.0)           Yes (v1.0, articles)
+  Status lifecycle     No                   No                   Yes                  Yes (article jobs)
+  Eval tier            Basics               Intermediate         Advanced             Advanced
+  GitHub               No                   No                   Yes                  No (local git)
+
+--------------------------------------------------------------------------------
+D.2  SKILL PROGRESSION
+--------------------------------------------------------------------------------
+
+  Step 1 — transaction-ledger (Basics)
+    Learn: FastAPI, Pydantic validation, in-memory store, pytest, .env
+
+  Step 2 — currency-converter (Intermediate)
+    Learn: Multi-component systems, Node client, Docker, ER diagrams,
+           flow traces, bug diagnosis
+
+  Step 3 — Fraud-score-system (Advanced)
+    Learn: Rust CLI, worker patterns, git worktrees, contract versioning,
+           parallel development, code review, performance profiling
+
+  Step 4 — screen-scraper (Advanced + production API)
+    Learn: Live API ops dashboard, React Flow, OpenAPI catalog, hybrid architecture
+           (read live API + local polyglot add-on), eval UI with markdown artifacts
+
+--------------------------------------------------------------------------------
+D.3  RULES FOR THE TEAM
+--------------------------------------------------------------------------------
+
+  1. NEVER mix code or configs between the four project folders.
+  2. Each project has its own .env — copy from .env.example, never commit .env.
+  3. Use the correct API port:
+       8000 ledger | 8001 converter | 8002 fraud | 8003 screen-scraper gateway
+     React dev UIs typically use 5173 (ledger, converter, screen-scraper).
+  4. Always run tests before claiming something works:
+       pytest -v | cargo test | npm test | make test | make e2e
+  5. Distinguish "agent suggested" from "manually verified" in all eval docs.
+  6. screen-scraper dashboard needs VPN for live scraper API probes.
+  7. Fraud-score-system is on GitHub — push with: git push origin main
+
+--------------------------------------------------------------------------------
+D.4  COMMON QUESTIONS
+--------------------------------------------------------------------------------
+
+  Q: Can I use transaction-ledger users in Fraud-score-system?
+  A: No. Completely separate projects. Different data models.
+
+  Q: Why is PostgreSQL in transaction-ledger .env but not used?
+  A: Credentials are ready for a future upgrade. App still uses in-memory store.
+
+  Q: Which project should a new team member start with?
+  A: transaction-ledger → currency-converter → Fraud-score-system or screen-scraper.
+
+  Q: Fraud-score-system vs screen-scraper — which Advanced project?
+  A: Fraud-score-system is self-contained (all local). screen-scraper adds a
+     React ops dashboard against the real Web Scraping API plus a similar
+     local scoring pipeline for articles. Both cover A1–A6 eval patterns.
+
+  Q: How do I run all tests across all projects?
+  A: Run separately in each folder. Fraud-score-system and screen-scraper both
+     have make test and make e2e for polyglot components.
+
+  Q: What is the review/agent-pr-seeded branch?
+  A: Intentional security bugs for A5 code review practice (Fraud-score-system
+     and screen-scraper). Never merge to main.
+
+  Q: Why are some scraper API nodes red in the dashboard?
+  A: Live dev API returns 500 for prefect health and clustering — UI reflects
+     real probe results, not assumed health.
+
+================================================================================
+END OF DOCUMENT
+================================================================================
+
+For quick reference see: PROJECTS_OVERVIEW.txt
+For markdown version see: PROJECTS_OVERVIEW.md
