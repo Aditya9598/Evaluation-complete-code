@@ -1,0 +1,28 @@
+{
+  "contract_version": "1.0",
+  "description": "Shared data contract for screen-scraper polyglot scoring pipeline",
+  "article_job": {
+    "contract_version": "1.0",
+    "job_id": "uuid",
+    "title": "string",
+    "body": "string",
+    "source": "economic_times",
+    "status": "pending"
+  },
+  "article_stored": {
+    "contract_version": "1.0",
+    "job_id": "uuid",
+    "title": "string",
+    "body": "string",
+    "source": "economic_times",
+    "status": "pending"
+  },
+  "score_result": {
+    "contract_version": "1.0",
+    "job_id": "uuid",
+    "relevance_score": 65,
+    "risk_score": 20,
+    "reasons": ["market_keywords"]
+  },
+  "status_values": ["pending", "processing", "scored", "failed"]
+}

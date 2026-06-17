@@ -1,0 +1,132 @@
+================================================================================
+PROJECTS OVERVIEW — TEAM GUIDE
+================================================================================
+
+Workspace: untitled folder
+Last updated: 2026-06-17
+
+Four INDEPENDENT projects. Do not share code, configs, or .env between them.
+
+EXAMINER GUIDE (eval tasks <-> workspace evidence):
+  EVAL_AND_PROJECTS_GUIDE.md  — full B1-B4, I1-I6, A1-A6 mapping with file paths
+                                and verify commands
+
+================================================================================
+AT A GLANCE
+================================================================================
+
+Project              Folder                  Eval Tier          Port(s)
+-------------------  ----------------------  -----------------  ---------
+Transaction Ledger   transaction-ledger/     Basics (B1-B4)     8000, 5173
+Currency Converter   currency-converter/     Intermediate I1-I6 8001, 5173
+Fraud Score System   Fraud-score-system/     Advanced (A1-A6)   8002
+Screen Scraper Ops   screen-scraper/         Advanced (A1-A6)   5173, 8003
+
+Stack summary:
+  transaction-ledger   -> Python FastAPI + React (/api routes)
+  currency-converter   -> Python FastAPI + Node CLI + React
+  Fraud-score-system   -> Python FastAPI + Node worker + Rust (all local)
+  screen-scraper       -> React live-API dashboard + local scorer-gateway
+
+Skill ladder:
+  Basics       -> transaction-ledger     (B1 repo inventory, B2 routes, B3 tests,
+                                          B4 greenfield FastAPI = the ledger itself)
+  Intermediate -> currency-converter   (I1 ER diagram, I2 flow trace, I3 safe change,
+                                          I4 polyglot pair, I5 docker, I6 bug)
+  Advanced     -> Fraud-score-system OR screen-scraper (A1 plan, A2 worktrees,
+                                          A3 polyglot, A4 modernization, A5 review,
+                                          A6 performance)
+
+================================================================================
+EVAL FRAMEWORK SUMMARY (see EVAL_AND_PROJECTS_GUIDE.md for full detail)
+================================================================================
+
+BASICS — Repo reader and simple builder (transaction-ledger/)
+  B1  30 min  Artifact inventory     -> docs/eval/basics/B1-artifact-inventory.md
+  B2  30 min  API + frontend routes  -> docs/eval/basics/B2-api-endpoint-map.md
+  B3  15 min  Test discovery + run   -> docs/eval/basics/B3-test-discovery.md
+  B4  60 min  Greenfield FastAPI     -> app/main.py, tests/test_api.py, README.md
+
+INTERMEDIATE — Repo operator and polyglot builder (currency-converter/)
+  I1  45 min  ER diagram from repo     -> docs/eval/intermediate/I1-er-diagram.md
+  I2  45 min  End-to-end flow trace    -> docs/eval/intermediate/I2-flow-trace.md
+  I3  60 min  Small safe change        -> docs/eval/intermediate/I3-safe-change.md
+  I4  90 min  FastAPI + Node CLI pair  -> service/, client/cli.js, I4-polyglot.md
+  I5  --      Dockerize                -> I5-docker.md, Dockerfile
+  I6  --      Bug diagnosis            -> I6-bug-diagnosis.md, eval/i6-* branches
+
+ADVANCED — Parallel agents and system builder
+  Two implementations: Fraud-score-system/ (all local) and screen-scraper/
+  (live API dashboard + local A3 scorer)
+
+  A1  45 min  Multi-worktree plan      -> docs/eval/advanced/A1-parallel-plan.md
+  A2  90 min  Execute parallel lanes   -> docs/eval/advanced/A2-worktrees.md
+  A3 150 min  FastAPI+Node+Rust        -> api/worker/scorer OR scorer-gateway/
+  A4  90 min  Modernization + step 1   -> A4-modernization.md, CI workflow
+  A5  60 min  Agent code review        -> A5-code-review.md, review/agent-pr-seeded
+  A6  90 min  Performance profiling    -> A6-performance.md, make bench / analytics UI
+
+================================================================================
+1. TRANSACTION LEDGER
+================================================================================
+
+  API + React dashboard. Routes under /api (e.g. /api/users, /api/transactions).
+  In-memory users (1-3) and transactions. Debit overdraft guard.
+  Eval: docs/eval/basics/ (B1-B3) + docs/eval/intermediate/ (I1-I3).
+  B4: the ledger project IS the greenfield FastAPI deliverable.
+
+================================================================================
+2. CURRENCY CONVERTER
+================================================================================
+
+  FastAPI /convert + Node cli.js + React ER diagram UI.
+  Hardcoded USD/EUR/GBP rates. Docker on 8001.
+  Eval: docs/eval/intermediate/ I1-I6.
+
+================================================================================
+3. FRAUD SCORE SYSTEM
+================================================================================
+
+  Fully local Advanced polyglot: API (8002) -> worker -> Rust scorer.
+  contract.json v1.0. GitHub: Aditya9598/Fraud-score-system
+  make test | make e2e
+  Eval: docs/eval/advanced/ A1-A6
+
+================================================================================
+4. SCREEN SCRAPER OPS
+================================================================================
+
+  HYBRID Advanced project:
+    - React dashboard calls LIVE Web Scraping API (VPN)
+    - Local scorer-gateway (8003) + worker + Rust for article scoring (A3)
+
+  Dashboard: http://127.0.0.1:5173
+    /ops        Pipeline ops (React Flow)
+    /apis       API catalog + Try-it
+    /analytics  Timings + A6 perf chart
+    /eval/advanced  A1-A6 hub with clickable markdown
+
+  Live API: new-scrapper-provider-dev.internal.production.gm.paytmmoney.com
+  Some endpoints return 500 on dev — dashboard shows red per real probes.
+
+  Eval: docs/eval/advanced/ A1-A6
+  Git worktrees: ../ss-pipeline, ../ss-audio
+
+================================================================================
+TEAM RULES
+================================================================================
+
+  1. Never mix the four project folders.
+  2. Ports: 8000 ledger | 8001 converter | 8002 fraud | 8003 scraper gateway
+  3. React dev UIs: port 5173 (ledger, converter, screen-scraper)
+  4. Run tests before claiming done: pytest, cargo test, npm test, make test
+  5. screen-scraper dashboard needs VPN for live API
+  6. Do not merge review/agent-pr-seeded to main
+
+================================================================================
+FULL DOCUMENTATION
+================================================================================
+
+  EVAL_AND_PROJECTS_GUIDE.md   — examiner guide: eval rubric + workspace mapping
+  PROJECTS_DETAILED_GUIDE.txt  — point-wise technical guide (all four projects)
+  PROJECTS_OVERVIEW.md         — markdown version of this summary

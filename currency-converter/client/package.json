@@ -1,0 +1,10 @@
+{
+  "name": "currency-converter-client",
+  "version": "1.0.0",
+  "description": "CLI client for currency-converter FastAPI service",
+  "type": "module",
+  "scripts": {
+    "convert": "node cli.js",
+    "verify": "node verify.js"
+  }
+}

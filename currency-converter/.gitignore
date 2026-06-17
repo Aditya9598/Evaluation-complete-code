@@ -1,0 +1,10 @@
+.env
+service/.env
+service/.venv/
+service/__pycache__/
+service/**/__pycache__/
+service/.pytest_cache/
+service/*.py[cod]
+client/node_modules/
+frontend/node_modules/
+frontend/dist/
