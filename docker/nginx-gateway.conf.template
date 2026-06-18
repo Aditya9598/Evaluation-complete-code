@@ -1,0 +1,74 @@
+worker_processes 1;
+error_log /var/log/nginx/gateway-error.log warn;
+pid /tmp/nginx-gateway.pid;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+    sendfile      on;
+    keepalive_timeout 65;
+
+    server {
+        listen ${PORT};
+        server_name _;
+
+        location = /health {
+            proxy_pass http://127.0.0.1:8000/api/health;
+        }
+
+        location /ledger/ {
+            proxy_pass http://127.0.0.1:8000/;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /converter-api/ {
+            proxy_pass http://127.0.0.1:8001/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /converter/ {
+            proxy_pass http://127.0.0.1:5174/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /fraud/ {
+            proxy_pass http://127.0.0.1:8002/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /scraper-gateway/ {
+            proxy_pass http://127.0.0.1:8003/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /scraper-api/ {
+            proxy_pass https://new-scrapper-provider-dev.internal.production.gm.paytmmoney.com/;
+            proxy_ssl_server_name on;
+            proxy_set_header Host new-scrapper-provider-dev.internal.production.gm.paytmmoney.com;
+        }
+
+        location /scraper/ {
+            proxy_pass http://127.0.0.1:5175/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location / {
+            root /var/www/examiner-hub;
+            index index.html;
+            try_files $uri $uri/ /index.html;
+        }
+    }
+}

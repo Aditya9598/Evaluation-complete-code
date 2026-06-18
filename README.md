@@ -1,36 +1,45 @@
-# Evaluation Complete Code
+# Eval Workspace — Deploy Guide
 
-Monorepo containing all four eval projects and examiner documentation.
+All four eval projects run from a single Docker image.
 
-## Projects
+## Railway (recommended)
 
-| Project | Folder | Eval tier | Ports |
-|---------|--------|-----------|-------|
-| Transaction Ledger | `transaction-ledger/` | Basics (B1–B4) | 8000, 5173 |
-| Currency Converter | `currency-converter/` | Intermediate (I1–I6) | 8001, 5173 |
-| Fraud Score System | `Fraud-score-system/` | Advanced (A1–A6) | 8002 |
-| Screen Scraper Ops | `screen-scraper/` | Advanced (A1–A6) | 5173, 8003 |
+1. Push this repo to GitHub (`Evaluation-complete-code` or your fork).
+2. In [Railway](https://railway.app): **New Project → Deploy from GitHub repo**.
+3. Railway detects `railway.toml` and builds with `RAILWAY=true`.
+4. After deploy, open the generated URL — the **Examiner Hub** is at `/`.
 
-## Documentation
+| Path | Project |
+|------|---------|
+| `/` | Examiner Hub |
+| `/ledger/` | Transaction Ledger |
+| `/converter/` | Currency Converter |
+| `/fraud/ui/` | Fraud Score System |
+| `/scraper/ops` | Screen Scraper Ops |
 
-- **EVAL_AND_PROJECTS_GUIDE.md** — maps eval tasks to code and verification commands
-- **PROJECTS_OVERVIEW.md** / **PROJECTS_OVERVIEW.txt** — quick reference
-- **PROJECTS_DETAILED_GUIDE.txt** — technical deep dive
+No manual port configuration needed — Railway sets `PORT` automatically.
 
-## Quick verify
+## Local Docker
 
 ```bash
-cd transaction-ledger && pytest -v
-cd currency-converter/service && pytest -v
-cd Fraud-score-system && make test && make e2e
-cd screen-scraper && make test && make e2e
+# With pre-built Rust scorers (faster if Docker cannot reach crates.io):
+cd Fraud-score-system/scorer && cargo build
+cd ../../screen-scraper/scorer && cargo build
+cd ../..
+docker build -t eval-workspace .
+
+docker run --rm \
+  -p 8000:8000 -p 8001:8001 -p 8002:8002 -p 8003:8003 \
+  -p 5174:5174 -p 5175:5175 -p 5176:5176 \
+  eval-workspace
 ```
 
-## Individual repos
+Open http://127.0.0.1:5176
 
-Each project is also available separately:
+## Local dev (no Docker)
 
-- https://github.com/Aditya9598/transaction-ledger
-- https://github.com/Aditya9598/currency-converter
-- https://github.com/Aditya9598/Fraud-score-system
-- https://github.com/Aditya9598/screen-scraper
+```bash
+./run-all.sh
+```
+
+Stop with `./stop-all.sh`
