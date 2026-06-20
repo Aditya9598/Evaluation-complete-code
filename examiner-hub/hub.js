@@ -55,6 +55,7 @@
     const tabs = Array.from(document.querySelectorAll(".tab"));
 
     let activeTab = "overview";
+    let frameLoadId = 0;
     modeBadge.textContent = config.mode;
 
     function getProject(id) {
@@ -106,12 +107,19 @@
       });
 
       const isOverview = tabId === "overview";
-      overviewPanel.classList.toggle("hidden", !isOverview);
-      projectPanel.classList.toggle("hidden", isOverview);
+      if (isOverview) {
+        overviewPanel.classList.remove("hidden");
+        projectPanel.classList.add("hidden");
+      } else {
+        overviewPanel.classList.add("hidden");
+        projectPanel.classList.remove("hidden");
+      }
       updateHash(tabId);
 
       if (isOverview) {
+        frameLoadId += 1;
         frame.src = "about:blank";
+        frameLoading.classList.add("hidden");
         return;
       }
 
@@ -123,9 +131,19 @@
         )
         .join("");
 
+      const loadId = ++frameLoadId;
       frameLoading.classList.remove("hidden");
-      frame.removeAttribute("src");
       frame.src = project.iframe;
+
+      const finishLoading = () => {
+        if (loadId !== frameLoadId) return;
+        frameLoading.classList.add("hidden");
+      };
+
+      frame.addEventListener("load", finishLoading, { once: true });
+      frame.addEventListener("error", finishLoading, { once: true });
+      window.setTimeout(finishLoading, 12000);
+
       refreshHealth();
     }
 
@@ -179,10 +197,6 @@
     });
 
     document.getElementById("refresh-health").addEventListener("click", refreshHealth);
-
-    frame.addEventListener("load", () => {
-      frameLoading.classList.add("hidden");
-    });
 
     const hashTab = window.location.hash.replace("#", "");
     const initialTab =
