@@ -16,7 +16,7 @@ This guide provides a comprehensive summary of the current independent projects 
 | Fraud Score System | `Fraud-score-system/` | Advanced (A1–A6) | 8002 | FastAPI + Node + Rust |
 | Screen Scraper Ops | `screen-scraper/` | Advanced (A1–A6) | 5173, 8003 | React Dashboard + Local Gateway |
 
-![Skill ladder](../assets/skill-ladder.svg)
+![Skill ladder](docs/assets/skill-ladder.svg)
 
 ## Skill Ladder & Complexity
 
@@ -32,23 +32,23 @@ Live workspace: [evaluation-complete-code-production.up.railway.app](https://eva
 
 **Overview** — `https://evaluation-complete-code-production.up.railway.app/`
 
-![Examiner Hub overview](../assets/screenshots/hub-overview.png)
+![Examiner Hub overview](docs/assets/screenshots/hub-overview.png)
 
 **Transaction Ledger** — `/#ledger`
 
-![Hub with Transaction Ledger tab](../assets/screenshots/hub-ledger.png)
+![Hub with Transaction Ledger tab](docs/assets/screenshots/hub-ledger.png)
 
 **Currency Converter** — `/#converter`
 
-![Hub with Currency Converter tab](../assets/screenshots/hub-converter.png)
+![Hub with Currency Converter tab](docs/assets/screenshots/hub-converter.png)
 
 **Fraud Score System** — `/#fraud`
 
-![Hub with Fraud Score System tab](../assets/screenshots/hub-fraud.png)
+![Hub with Fraud Score System tab](docs/assets/screenshots/hub-fraud.png)
 
 **Screen Scraper Ops** — `/#scraper`
 
-![Hub with Screen Scraper Ops tab](../assets/screenshots/hub-scraper.png)
+![Hub with Screen Scraper Ops tab](docs/assets/screenshots/hub-scraper.png)
 
 ---
 
@@ -56,13 +56,13 @@ Live workspace: [evaluation-complete-code-production.up.railway.app](https://eva
 
 This project features a Python API and React dashboard for managing ledger entries.
 
-![Transaction Ledger dashboard in hub](../assets/screenshots/hub-ledger.png)
+![Transaction Ledger dashboard in hub](docs/assets/screenshots/hub-ledger.png)
 
-![Ledger dashboard — balances and stats](../assets/screenshots/ledger-dashboard.png)
+![Ledger dashboard — balances and stats](docs/assets/screenshots/ledger-dashboard.png)
 
-![Users & balances page](../assets/screenshots/ledger-users.png)
+![Users & balances page](docs/assets/screenshots/ledger-users.png)
 
-![Transactions list](../assets/screenshots/ledger-transactions.png)
+![Transactions list](docs/assets/screenshots/ledger-transactions.png)
 
 - **Routes:** Base routes are under `/api` (e.g. `/api/users`, `/api/transactions`).
 - **Data Management:** Utilizes in-memory storage for users and transactions.
@@ -75,9 +75,9 @@ This project features a Python API and React dashboard for managing ledger entri
 
 A conversion utility involving multiple interfaces and Docker integration.
 
-![Currency Converter in hub preview](../assets/screenshots/hub-converter.png)
+![Currency Converter in hub preview](docs/assets/screenshots/hub-converter.png)
 
-![ER diagram page — I1 eval artifact](../assets/screenshots/converter-er-diagram.png)
+![ER diagram page — I1 eval artifact](docs/assets/screenshots/converter-er-diagram.png)
 
 - **Interfaces:** FastAPI `/convert` endpoint, Node.js `cli.js`, and a React UI with ER diagrams.
 - **Rates:** Uses hardcoded USD/EUR/GBP conversion rates.
@@ -90,9 +90,9 @@ A conversion utility involving multiple interfaces and Docker integration.
 
 A fully local, advanced polyglot system designed for high-performance scoring.
 
-![Fraud Score System in hub preview](../assets/screenshots/hub-fraud.png)
+![Fraud Score System in hub preview](docs/assets/screenshots/hub-fraud.png)
 
-![Fraud pipeline dashboard](../assets/screenshots/fraud-ui.png)
+![Fraud pipeline dashboard](docs/assets/screenshots/fraud-ui.png)
 
 - **Architecture:** FastAPI (8002) → Node.js Worker → Rust Scorer.
 - **Specification:** Governed by `contract.json` v1.0.
@@ -105,9 +105,9 @@ A fully local, advanced polyglot system designed for high-performance scoring.
 
 A hybrid advanced project combining live API interaction with local processing.
 
-![Screen Scraper Ops in hub preview](../assets/screenshots/hub-scraper.png)
+![Screen Scraper Ops in hub preview](docs/assets/screenshots/hub-scraper.png)
 
-![Ops pipeline dashboard with live probes](../assets/screenshots/scraper-ops.png)
+![Ops pipeline dashboard with live probes](docs/assets/screenshots/scraper-ops.png)
 
 - **Components:** React dashboard calling a **LIVE** Web Scraping API via VPN, plus a local scorer-gateway (8003) using Rust for article scoring.
 - **Dashboard Features:**

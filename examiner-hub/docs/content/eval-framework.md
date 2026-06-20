@@ -4,7 +4,7 @@
 **Last updated:** 2026-06-17  
 **Audience:** Evaluators and team onboarding
 
-![Skill ladder — Basics, Intermediate, Advanced](../assets/skill-ladder.svg)
+![Skill ladder — Basics, Intermediate, Advanced](docs/assets/skill-ladder.svg)
 
 This document connects **what the eval framework asks for** (Basics / Intermediate / Advanced tasks) with **what exists in this workspace** — code, tests, docs, and UI evidence.
 
@@ -31,45 +31,45 @@ Use the [Examiner Hub](https://evaluation-complete-code-production.up.railway.ap
 
 ### Overview tab
 
-![Examiner Hub overview — project cards and skill ladder](../assets/screenshots/hub-overview.png)
+![Examiner Hub overview — project cards and skill ladder](docs/assets/screenshots/hub-overview.png)
 
 *Overview tab at `/` — pick a project card or use the tabs above.*
 
 ### Transaction Ledger (`#ledger`)
 
-![Transaction Ledger in Examiner Hub](../assets/screenshots/hub-ledger.png)
+![Transaction Ledger in Examiner Hub](docs/assets/screenshots/hub-ledger.png)
 
 *Basics tier — dashboard with account balances inside the hub iframe.*
 
-![Ledger dashboard — accounts and totals](../assets/screenshots/ledger-dashboard.png)
+![Ledger dashboard — accounts and totals](docs/assets/screenshots/ledger-dashboard.png)
 
-![Ledger users and balances](../assets/screenshots/ledger-users.png)
+![Ledger users and balances](docs/assets/screenshots/ledger-users.png)
 
-![Ledger transactions table](../assets/screenshots/ledger-transactions.png)
+![Ledger transactions table](docs/assets/screenshots/ledger-transactions.png)
 
 ### Currency Converter (`#converter`)
 
-![Currency Converter in Examiner Hub](../assets/screenshots/hub-converter.png)
+![Currency Converter in Examiner Hub](docs/assets/screenshots/hub-converter.png)
 
 *Intermediate tier — FX converter UI in the hub preview.*
 
-![Converter ER diagram page](../assets/screenshots/converter-er-diagram.png)
+![Converter ER diagram page](docs/assets/screenshots/converter-er-diagram.png)
 
 ### Fraud Score System (`#fraud`)
 
-![Fraud Score System in Examiner Hub](../assets/screenshots/hub-fraud.png)
+![Fraud Score System in Examiner Hub](docs/assets/screenshots/hub-fraud.png)
 
 *Advanced tier — local polyglot fraud pipeline dashboard at `/fraud/ui/`.*
 
-![Fraud pipeline dashboard](../assets/screenshots/fraud-ui.png)
+![Fraud pipeline dashboard](docs/assets/screenshots/fraud-ui.png)
 
 ### Screen Scraper Ops (`#scraper`)
 
-![Screen Scraper Ops in Examiner Hub](../assets/screenshots/hub-scraper.png)
+![Screen Scraper Ops in Examiner Hub](docs/assets/screenshots/hub-scraper.png)
 
 *Advanced tier — live API ops dashboard at `/scraper/ops`.*
 
-![Scraper ops pipeline view](../assets/screenshots/scraper-ops.png)
+![Scraper ops pipeline view](docs/assets/screenshots/scraper-ops.png)
 
 ---
 

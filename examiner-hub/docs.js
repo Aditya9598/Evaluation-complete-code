@@ -10,6 +10,10 @@
     breaks: false,
   });
 
+  function fixImagePaths(html) {
+    return html.replace(/src="(?:\.\.\/)?assets\//g, 'src="/docs/assets/');
+  }
+
   async function loadPanel(panel) {
     const src = panel.dataset.src;
     if (!src || loaded.has(src)) return;
@@ -21,7 +25,7 @@
       const res = await fetch(src, { cache: "no-store" });
       if (!res.ok) throw new Error(`Failed to load ${src} (${res.status})`);
       const md = await res.text();
-      panel.innerHTML = marked.parse(md);
+      panel.innerHTML = fixImagePaths(marked.parse(md));
       loaded.add(src);
     } catch (err) {
       errorEl.textContent = err instanceof Error ? err.message : "Failed to load documentation.";
