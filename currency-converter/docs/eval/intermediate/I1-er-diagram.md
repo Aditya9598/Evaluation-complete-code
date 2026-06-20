@@ -101,10 +101,9 @@ erDiagram
         string to_currency PK
         float multiplier
     }
-    Currency ||--o{ ConvertRequest : "from_currency"
-    Currency ||--o{ ConvertRequest : "to_currency"
-    ConvertRequest ||--|| ConvertResponse : "produces"
-    RATES ||--o{ ConvertRequest : "lookup by from and to"
+    Currency ||--o{ ConvertRequest : references
+    ConvertRequest ||--|| ConvertResponse : produces
+    RATES ||--o{ ConvertRequest : lookup
 ```
 
 ---

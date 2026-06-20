@@ -100,7 +100,7 @@ start_bg ledger-ui "source '$NVM_DIR/nvm.sh' 2>/dev/null; cd '$ROOT/transaction-
 ensure_venv "$ROOT/currency-converter/service"
 ensure_npm "$ROOT/currency-converter/frontend"
 start_bg converter-api "cd '$ROOT/currency-converter/service' && source .venv/bin/activate && uvicorn app.main:app --reload --host 127.0.0.1 --port $PORT_CONVERTER_API"
-start_bg converter-ui "source '$NVM_DIR/nvm.sh' 2>/dev/null; cd '$ROOT/currency-converter/frontend' && VITE_API_URL=http://127.0.0.1:$PORT_CONVERTER_API exec '$NPM_BIN' run dev -- --host 127.0.0.1 --port $PORT_CONVERTER_UI --strictPort"
+start_bg converter-ui "source '$NVM_DIR/nvm.sh' 2>/dev/null; cd '$ROOT/currency-converter/frontend' && exec '$NPM_BIN' run dev -- --host 127.0.0.1 --port $PORT_CONVERTER_UI --strictPort"
 
 # --- Fraud Score System ---
 ensure_venv "$ROOT/Fraud-score-system/api"

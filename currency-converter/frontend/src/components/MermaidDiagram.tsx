@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import mermaid from "mermaid";
+import { getMermaid } from "../lib/mermaidSetup";
 
 interface Props {
   chart: string;
@@ -15,7 +15,7 @@ export function MermaidDiagram({ chart, id = "mermaid-er" }: Props) {
 
     async function render() {
       try {
-        mermaid.initialize({ startOnLoad: false, theme: "neutral", securityLevel: "loose" });
+        const mermaid = await getMermaid();
         const uniqueId = `${id}-${Date.now()}`;
         const { svg } = await mermaid.render(uniqueId, chart);
         if (!cancelled && containerRef.current) {

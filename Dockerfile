@@ -26,10 +26,11 @@ COPY transaction-ledger/frontend/package.json transaction-ledger/frontend/packag
 RUN npm ci
 COPY transaction-ledger/frontend/ ./
 RUN if [ "$RAILWAY" = "true" ]; then \
-      printf 'VITE_BASE_PATH=/ledger/\nVITE_API_URL=/ledger/api\n' > .env.production; \
+      printf 'VITE_BASE_PATH=/ledger/\nVITE_API_URL=/ledger/api\n' > .env.production && \
+      VITE_BASE_PATH=/ledger/ VITE_API_URL=/ledger/api npm run build; \
     else \
-      printf 'VITE_API_URL=/api\n' > .env.production; \
-    fi && npm run build
+      printf 'VITE_API_URL=/api\n' > .env.production && npm run build; \
+    fi
 
 # ── Stage 2: Currency Converter React build ──
 FROM node:20-alpine AS converter-fe
@@ -39,10 +40,11 @@ COPY currency-converter/frontend/package.json currency-converter/frontend/packag
 RUN npm ci
 COPY currency-converter/frontend/ ./
 RUN if [ "$RAILWAY" = "true" ]; then \
-      printf 'VITE_BASE_PATH=/converter/\nVITE_API_URL=/converter-api\n' > .env.production; \
+      printf 'VITE_BASE_PATH=/converter/\nVITE_API_URL=/converter-api\n' > .env.production && \
+      VITE_BASE_PATH=/converter/ VITE_API_URL=/converter-api npm run build; \
     else \
-      printf 'VITE_API_URL=http://127.0.0.1:8001\n' > .env.production; \
-    fi && npm run build
+      printf 'VITE_API_URL=http://127.0.0.1:8001\n' > .env.production && npm run build; \
+    fi
 
 # ── Stage 3: Screen Scraper React build ──
 FROM node:20-alpine AS scraper-fe

@@ -129,7 +129,7 @@
           </tbody>
         </table>
         <div class="actions">
-          <a class="btn-link" href="/docs" target="_blank" rel="noopener">Open Swagger API docs</a>
+          <a class="btn-link" id="docs-link" href="http://127.0.0.1:8002/docs" target="_blank" rel="noopener">Open Fraud Score API docs</a>
         </div>
       </div>
     </main>
@@ -140,6 +140,7 @@
         return window.location.origin;
       }
       const API = apiBase();
+      document.getElementById("docs-link").href = `${API}/docs`;
 
       async function loadHealth() {
         const el = document.getElementById("api-status");
