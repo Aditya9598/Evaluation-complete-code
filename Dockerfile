@@ -5,9 +5,9 @@
 #   cd screen-scraper/scorer && cargo build
 #   docker build -t eval-workspace .
 #
-# Railway build (Rust compiled inside Docker):
-#   docker build --build-arg RAILWAY=true -t eval-workspace .
-# railway-deploy-v2: fixed subpath asset URLs for production gateway
+# Local Docker build (root-relative frontend paths):
+#   docker build --build-arg RAILWAY=false -t eval-workspace .
+# railway-deploy-v3: default RAILWAY=true + post-build asset path verification
 #
 # Local run:
 #   docker run --rm -p 8000:8000 -p 8001:8001 -p 8002:8002 -p 8003:8003 \
@@ -16,7 +16,7 @@
 # Railway run (single public port):
 #   docker run --rm -e PORT=8080 -p 8080:8080 eval-workspace
 
-ARG RAILWAY=false
+ARG RAILWAY=true
 
 # ── Stage 1: Transaction Ledger React build ──
 FROM node:20-alpine AS ledger-fe
@@ -27,7 +27,8 @@ RUN npm ci
 COPY transaction-ledger/frontend/ ./
 RUN if [ "$RAILWAY" = "true" ]; then \
       printf 'VITE_BASE_PATH=/ledger/\nVITE_API_URL=/ledger/api\n' > .env.production && \
-      VITE_BASE_PATH=/ledger/ VITE_API_URL=/ledger/api npm run build; \
+      VITE_BASE_PATH=/ledger/ VITE_API_URL=/ledger/api npm run build && \
+      grep -q '/ledger/assets/' dist/index.html || (echo "ERROR: ledger build missing /ledger/assets/ paths" && exit 1); \
     else \
       printf 'VITE_API_URL=/api\n' > .env.production && npm run build; \
     fi
@@ -41,7 +42,8 @@ RUN npm ci
 COPY currency-converter/frontend/ ./
 RUN if [ "$RAILWAY" = "true" ]; then \
       printf 'VITE_BASE_PATH=/converter/\nVITE_API_URL=/converter-api\n' > .env.production && \
-      VITE_BASE_PATH=/converter/ VITE_API_URL=/converter-api npm run build; \
+      VITE_BASE_PATH=/converter/ VITE_API_URL=/converter-api npm run build && \
+      grep -q '/converter/assets/' dist/index.html || (echo "ERROR: converter build missing /converter/assets/ paths" && exit 1); \
     else \
       printf 'VITE_API_URL=http://127.0.0.1:8001\n' > .env.production && npm run build; \
     fi
@@ -55,10 +57,12 @@ RUN npm ci
 COPY screen-scraper/frontend/ ./
 COPY screen-scraper/docs/eval/advanced/ ./public/eval/advanced/
 RUN if [ "$RAILWAY" = "true" ]; then \
-      printf 'VITE_BASE_PATH=/scraper/\nVITE_USE_PROXY=true\nVITE_SCRAPER_API_BASE_URL=/scraper-api\n' > .env.production; \
+      printf 'VITE_BASE_PATH=/scraper/\nVITE_USE_PROXY=true\nVITE_SCRAPER_API_BASE_URL=/scraper-api\n' > .env.production && \
+      VITE_BASE_PATH=/scraper/ VITE_USE_PROXY=true VITE_SCRAPER_API_BASE_URL=/scraper-api npm run build && \
+      grep -q '/scraper/assets/' dist/index.html || (echo "ERROR: scraper build missing /scraper/assets/ paths" && exit 1); \
     else \
-      printf 'VITE_USE_PROXY=true\n' > .env.production; \
-    fi && npm run build
+      printf 'VITE_USE_PROXY=true\n' > .env.production && npm run build; \
+    fi
 
 # ── Stage 4: Fraud scorer (Railway builds in Docker) ──
 FROM rust:1.83-bookworm AS fraud-scorer-build
@@ -76,7 +80,7 @@ RUN cargo build --release 2>/dev/null || cargo build --release
 
 # ── Stage 6: Runtime ──
 FROM python:3.12-slim-bookworm
-ARG RAILWAY=false
+ARG RAILWAY=true
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx curl ca-certificates \

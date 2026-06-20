@@ -129,8 +129,12 @@
       refreshHealth();
     }
 
-    async function probe(check) {
+    async function probe(check, strict) {
       try {
+        if (strict) {
+          const res = await fetch(check.url, { cache: "no-store" });
+          return res.ok;
+        }
         const res = await fetch(check.url, { mode: "no-cors", cache: "no-store" });
         return res.type === "opaque" || res.ok;
       } catch {
@@ -142,6 +146,7 @@
       if (activeTab === "overview") return;
 
       const project = getProject(activeTab);
+      const strictProbe = config.mode === "railway";
       healthEl.innerHTML = project.checks
         .map(
           (check) =>
@@ -151,7 +156,7 @@
 
       await Promise.all(
         project.checks.map(async (check) => {
-          const ok = await probe(check);
+          const ok = await probe(check, strictProbe);
           const item = healthEl.querySelector(`[data-check="${check.label}"]`);
           if (!item) return;
           const dot = item.querySelector(".dot");

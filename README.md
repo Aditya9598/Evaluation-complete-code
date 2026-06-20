@@ -26,7 +26,7 @@ No manual port configuration needed — Railway sets `PORT` automatically.
 cd Fraud-score-system/scorer && cargo build
 cd ../../screen-scraper/scorer && cargo build
 cd ../..
-docker build -t eval-workspace .
+docker build --build-arg RAILWAY=false -t eval-workspace .
 
 docker run --rm \
   -p 8000:8000 -p 8001:8001 -p 8002:8002 -p 8003:8003 \
