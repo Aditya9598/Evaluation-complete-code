@@ -7,6 +7,7 @@
 #
 # Railway build (Rust compiled inside Docker):
 #   docker build --build-arg RAILWAY=true -t eval-workspace .
+# railway-deploy-v2: fixed subpath asset URLs for production gateway
 #
 # Local run:
 #   docker run --rm -p 8000:8000 -p 8001:8001 -p 8002:8002 -p 8003:8003 \
@@ -25,9 +26,9 @@ COPY transaction-ledger/frontend/package.json transaction-ledger/frontend/packag
 RUN npm ci
 COPY transaction-ledger/frontend/ ./
 RUN if [ "$RAILWAY" = "true" ]; then \
-      export VITE_BASE_PATH=/ledger/ VITE_API_URL=/ledger/api; \
+      printf 'VITE_BASE_PATH=/ledger/\nVITE_API_URL=/ledger/api\n' > .env.production; \
     else \
-      export VITE_API_URL=/api; \
+      printf 'VITE_API_URL=/api\n' > .env.production; \
     fi && npm run build
 
 # ── Stage 2: Currency Converter React build ──
@@ -38,9 +39,9 @@ COPY currency-converter/frontend/package.json currency-converter/frontend/packag
 RUN npm ci
 COPY currency-converter/frontend/ ./
 RUN if [ "$RAILWAY" = "true" ]; then \
-      export VITE_BASE_PATH=/converter/ VITE_API_URL=/converter-api; \
+      printf 'VITE_BASE_PATH=/converter/\nVITE_API_URL=/converter-api\n' > .env.production; \
     else \
-      export VITE_API_URL=http://127.0.0.1:8001; \
+      printf 'VITE_API_URL=http://127.0.0.1:8001\n' > .env.production; \
     fi && npm run build
 
 # ── Stage 3: Screen Scraper React build ──
@@ -52,9 +53,9 @@ RUN npm ci
 COPY screen-scraper/frontend/ ./
 COPY screen-scraper/docs/eval/advanced/ ./public/eval/advanced/
 RUN if [ "$RAILWAY" = "true" ]; then \
-      export VITE_BASE_PATH=/scraper/ VITE_USE_PROXY=true VITE_SCRAPER_API_BASE_URL=/scraper-api; \
+      printf 'VITE_BASE_PATH=/scraper/\nVITE_USE_PROXY=true\nVITE_SCRAPER_API_BASE_URL=/scraper-api\n' > .env.production; \
     else \
-      export VITE_USE_PROXY=true; \
+      printf 'VITE_USE_PROXY=true\n' > .env.production; \
     fi && npm run build
 
 # ── Stage 4: Fraud scorer (Railway builds in Docker) ──

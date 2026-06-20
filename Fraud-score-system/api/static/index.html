@@ -134,7 +134,12 @@
       </div>
     </main>
     <script>
-      const API = window.location.origin;
+      function apiBase() {
+        const path = window.location.pathname;
+        if (path.startsWith("/fraud")) return `${window.location.origin}/fraud`;
+        return window.location.origin;
+      }
+      const API = apiBase();
 
       async function loadHealth() {
         const el = document.getElementById("api-status");
