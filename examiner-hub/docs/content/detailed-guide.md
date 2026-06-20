@@ -26,6 +26,10 @@
 | Default port | 8000 |
 | Git remote | Local only (not on GitHub) |
 
+![Transaction Ledger — hub preview with dashboard](../assets/screenshots/hub-ledger.png)
+
+![Ledger users, transactions, and balances](../assets/screenshots/ledger-users.png)
+
 ### A.1 Overview and Purpose
 
 1. Simulates a simple bank/account ledger system.
@@ -79,6 +83,10 @@
 | Primary stack | Python FastAPI + Node.js CLI |
 | Default port | 8001 |
 
+![Currency Converter in hub preview](../assets/screenshots/hub-converter.png)
+
+![ER diagram UI](../assets/screenshots/converter-er-diagram.png)
+
 ### B.1 Core Features
 
 - Converts between USD, EUR, and GBP using hardcoded rates.
@@ -102,6 +110,10 @@
 | Eval tier | Advanced (A1–A6) |
 | Primary stack | Python FastAPI + Node.js Worker + Rust CLI |
 | GitHub Remote | https://github.com/Aditya9598/Fraud-score-system.git |
+
+![Fraud Score System in hub preview](../assets/screenshots/hub-fraud.png)
+
+![Fraud pipeline dashboard](../assets/screenshots/fraud-ui.png)
 
 ![Fraud pipeline diagram](../assets/fraud-pipeline.svg)
 
@@ -130,6 +142,10 @@ Uses `contract.json` v1.0 to prevent schema drift across different languages and
 | Eval tier | Advanced (A1–A6) |
 | Primary stack | React Dashboard + FastAPI Gateway + Node Worker + Rust |
 | Live API | new-scrapper-provider-dev (VPN required) |
+
+![Screen Scraper Ops in hub preview](../assets/screenshots/hub-scraper.png)
+
+![Ops dashboard with React Flow pipeline](../assets/screenshots/scraper-ops.png)
 
 ![Scraper architecture diagram](../assets/scraper-architecture.svg)
 

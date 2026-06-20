@@ -211,11 +211,17 @@ body.docs-page {
   color: var(--accent-hover);
 }
 
-.docs-md-body blockquote {
-  margin: 1rem 0;
-  padding: 0.5rem 0 0.5rem 1rem;
-  border-left: 3px solid var(--accent);
+.docs-md-body em {
+  display: block;
+  margin: -0.75rem 0 1.25rem;
   color: var(--muted);
+  font-size: 0.8rem;
+  font-style: normal;
+}
+
+.docs-md-body table img {
+  max-width: 280px;
+  margin: 0.25rem 0;
 }
 
 @media (max-width: 640px) {

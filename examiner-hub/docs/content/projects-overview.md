@@ -26,9 +26,43 @@ This guide provides a comprehensive summary of the current independent projects 
 
 ---
 
+## Examiner Hub previews (Railway)
+
+Live workspace: [evaluation-complete-code-production.up.railway.app](https://evaluation-complete-code-production.up.railway.app/)
+
+**Overview** — `https://evaluation-complete-code-production.up.railway.app/`
+
+![Examiner Hub overview](../assets/screenshots/hub-overview.png)
+
+**Transaction Ledger** — `/#ledger`
+
+![Hub with Transaction Ledger tab](../assets/screenshots/hub-ledger.png)
+
+**Currency Converter** — `/#converter`
+
+![Hub with Currency Converter tab](../assets/screenshots/hub-converter.png)
+
+**Fraud Score System** — `/#fraud`
+
+![Hub with Fraud Score System tab](../assets/screenshots/hub-fraud.png)
+
+**Screen Scraper Ops** — `/#scraper`
+
+![Hub with Screen Scraper Ops tab](../assets/screenshots/hub-scraper.png)
+
+---
+
 ## 1. Transaction Ledger
 
 This project features a Python API and React dashboard for managing ledger entries.
+
+![Transaction Ledger dashboard in hub](../assets/screenshots/hub-ledger.png)
+
+![Ledger dashboard — balances and stats](../assets/screenshots/ledger-dashboard.png)
+
+![Users & balances page](../assets/screenshots/ledger-users.png)
+
+![Transactions list](../assets/screenshots/ledger-transactions.png)
 
 - **Routes:** Base routes are under `/api` (e.g. `/api/users`, `/api/transactions`).
 - **Data Management:** Utilizes in-memory storage for users and transactions.
@@ -41,6 +75,10 @@ This project features a Python API and React dashboard for managing ledger entri
 
 A conversion utility involving multiple interfaces and Docker integration.
 
+![Currency Converter in hub preview](../assets/screenshots/hub-converter.png)
+
+![ER diagram page — I1 eval artifact](../assets/screenshots/converter-er-diagram.png)
+
 - **Interfaces:** FastAPI `/convert` endpoint, Node.js `cli.js`, and a React UI with ER diagrams.
 - **Rates:** Uses hardcoded USD/EUR/GBP conversion rates.
 - **Deployment:** Dockerized on port 8001.
@@ -52,6 +90,10 @@ A conversion utility involving multiple interfaces and Docker integration.
 
 A fully local, advanced polyglot system designed for high-performance scoring.
 
+![Fraud Score System in hub preview](../assets/screenshots/hub-fraud.png)
+
+![Fraud pipeline dashboard](../assets/screenshots/fraud-ui.png)
+
 - **Architecture:** FastAPI (8002) → Node.js Worker → Rust Scorer.
 - **Specification:** Governed by `contract.json` v1.0.
 - **Validation:** Use `make test` or `make e2e` for verification.
@@ -62,6 +104,10 @@ A fully local, advanced polyglot system designed for high-performance scoring.
 ## 4. Screen Scraper Ops
 
 A hybrid advanced project combining live API interaction with local processing.
+
+![Screen Scraper Ops in hub preview](../assets/screenshots/hub-scraper.png)
+
+![Ops pipeline dashboard with live probes](../assets/screenshots/scraper-ops.png)
 
 - **Components:** React dashboard calling a **LIVE** Web Scraping API via VPN, plus a local scorer-gateway (8003) using Rust for article scoring.
 - **Dashboard Features:**
