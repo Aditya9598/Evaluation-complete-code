@@ -32,7 +32,7 @@
         </div>
         <div>
           <h1>Eval Workspace Docs</h1>
-          <p>Examiner guide — projects, eval tasks, and how to verify</p>
+          <p>Examiner and team documentation</p>
         </div>
       </div>
       <div class="meta">
@@ -41,309 +41,54 @@
     </header>
 
     <nav class="docs-tabs" role="tablist" aria-label="Documentation sections">
-      <button type="button" class="docs-tab active" data-docs-tab="overview" role="tab" aria-selected="true">
-        Overview
+      <button
+        type="button"
+        class="docs-tab active"
+        data-docs-tab="eval-framework"
+        role="tab"
+        aria-selected="true"
+      >
+        Eval Framework + Workspace Projects
       </button>
-      <button type="button" class="docs-tab" data-docs-tab="eval-tiers" role="tab" aria-selected="false">
-        Basics &amp; Intermediate
+      <button
+        type="button"
+        class="docs-tab"
+        data-docs-tab="detailed-guide"
+        role="tab"
+        aria-selected="false"
+      >
+        Complete Projects Guide
       </button>
-      <button type="button" class="docs-tab" data-docs-tab="advanced" role="tab" aria-selected="false">
-        Advanced
+      <button type="button" class="docs-tab" data-docs-tab="projects-overview" role="tab" aria-selected="false">
+        Projects Overview
       </button>
     </nav>
 
     <main class="docs-main">
-      <!-- TAB 1: OVERVIEW -->
-      <article id="docs-panel-overview" class="docs-panel" role="tabpanel">
-        <h2>What is this workspace?</h2>
-        <p>
-          This monorepo hosts <strong>four independent evaluation projects</strong>, each at a
-          different skill tier. They do not share code, configuration, or business logic. The
-          <strong>Examiner Hub</strong> lets you preview each project UI, check health status, and
-          jump to API docs — all from one Railway deployment.
-        </p>
+      <div id="docs-loading" class="docs-loading hidden">Loading…</div>
+      <div id="docs-error" class="docs-error hidden"></div>
 
-        <figure class="docs-figure">
-          <img src="docs/assets/hub-layout.svg" alt="Examiner hub layout with project tabs and preview iframe" />
-          <figcaption>Examiner Hub — pick a project tab to preview its dashboard in the iframe</figcaption>
-        </figure>
-
-        <figure class="docs-figure">
-          <img src="docs/assets/skill-ladder.svg" alt="Skill ladder from Basics through Intermediate to Advanced" />
-          <figcaption>Skill ladder — each tier maps to one or more projects in this workspace</figcaption>
-        </figure>
-
-        <h3>Projects at a glance</h3>
-        <div class="docs-table-wrap">
-          <table class="docs-table">
-            <thead>
-              <tr>
-                <th>Project</th>
-                <th>Folder</th>
-                <th>Tier</th>
-                <th>Stack</th>
-                <th>Hub path (Railway)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Transaction Ledger</td>
-                <td><code>transaction-ledger/</code></td>
-                <td>Basics (B1–B4)</td>
-                <td>FastAPI + React</td>
-                <td><code>/ledger/</code></td>
-              </tr>
-              <tr>
-                <td>Currency Converter</td>
-                <td><code>currency-converter/</code></td>
-                <td>Intermediate (I1–I6)</td>
-                <td>FastAPI + Node CLI + React</td>
-                <td><code>/converter/</code></td>
-              </tr>
-              <tr>
-                <td>Fraud Score System</td>
-                <td><code>Fraud-score-system/</code></td>
-                <td>Advanced (A1–A6)</td>
-                <td>FastAPI + Node + Rust</td>
-                <td><code>/fraud/ui/</code></td>
-              </tr>
-              <tr>
-                <td>Screen Scraper Ops</td>
-                <td><code>screen-scraper/</code></td>
-                <td>Advanced (A1–A6)</td>
-                <td>React + live API + local gateway</td>
-                <td><code>/scraper/ops</code></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>How to use the hub</h3>
-        <ol>
-          <li>Open the deployed URL — the hub loads at <code>/</code>.</li>
-          <li>Click a project tab (Ledger, Converter, Fraud, Scraper) to preview its UI in the iframe.</li>
-          <li>Use the toolbar links to open dashboards or API docs in a new tab.</li>
-          <li>Check the green health dots — they confirm API and UI endpoints respond.</li>
-        </ol>
-
-        <div class="docs-callout">
-          <strong>Rule for examiners:</strong> Treat each project folder as isolated. Do not share
-          code, <code>.env</code> files, or business logic between them.
-        </div>
-
-        <p style="margin-top: 1.5rem; font-size: 0.84rem; color: var(--muted)">
-          External reference (Google sign-in may be required):
-          <a
-            href="https://docs.google.com/document/d/19KuimPdLIapJXbWQRxeIRkNbZ3MeKULKGMTlrc0gBzY/edit"
-            target="_blank"
-            rel="noopener noreferrer"
-            style="color: var(--accent-hover)"
-            >Original examiner Google Doc</a
-          >
-        </p>
-
-        <h3>Quick verify commands</h3>
-        <pre class="docs-code"># Basics — transaction-ledger
-cd transaction-ledger && pytest -v
-
-# Intermediate — currency-converter
-cd currency-converter/service && pytest -v
-cd currency-converter/client && node cli.js --amount 100 --from USD --to EUR
-
-# Advanced — Fraud-score-system
-cd Fraud-score-system && make test && make e2e
-
-# Advanced — screen-scraper
-cd screen-scraper && make test && make e2e</pre>
-      </article>
-
-      <!-- TAB 2: BASICS & INTERMEDIATE -->
-      <article id="docs-panel-eval-tiers" class="docs-panel hidden" role="tabpanel">
-        <h2>Basics &amp; Intermediate eval tasks</h2>
-        <p>
-          These tiers test repo reading, API mapping, test discovery, greenfield FastAPI work, ER
-          diagrams, flow traces, polyglot integration, Docker, and bug diagnosis.
-        </p>
-
-        <h3><span class="tier-tag basics">Basics</span> Transaction Ledger</h3>
-        <p>
-          <strong>Eval title:</strong> Repo reader and simple builder.<br />
-          <strong>Project:</strong> FastAPI ledger with in-memory users, credit/debit transactions,
-          balance tracking, React dashboard, and pytest suite.
-        </p>
-
-        <div class="docs-task-grid">
-          <div class="docs-task">
-            <div class="time">B1 · 30 min</div>
-            <h4>Repo artifact inventory</h4>
-            <p>Find models, stores, configs, and frontend client code. Evidence in <code>docs/eval/basics/B1-artifact-inventory.md</code>.</p>
-          </div>
-          <div class="docs-task">
-            <div class="time">B2 · 30 min</div>
-            <h4>API endpoint map</h4>
-            <p>Map every API route and React page. Evidence in <code>docs/eval/basics/B2-api-endpoint-map.md</code>. OpenAPI at <code>/ledger/docs</code>.</p>
-          </div>
-          <div class="docs-task">
-            <div class="time">B3 · 15 min</div>
-            <h4>Test discovery</h4>
-            <p>Framework, test files, commands. Run <code>pytest -v</code> in <code>transaction-ledger/</code>.</p>
-          </div>
-          <div class="docs-task">
-            <div class="time">B4 · 60 min</div>
-            <h4>Greenfield FastAPI service</h4>
-            <p>The ledger codebase itself is the deliverable: POST/GET transactions, GET balance, validation, ≥3 tests, README.</p>
-          </div>
-        </div>
-
-        <h3><span class="tier-tag intermediate">Intermediate</span> Currency Converter</h3>
-        <p>
-          <strong>Eval title:</strong> Repo operator and polyglot builder.<br />
-          <strong>Project:</strong> FastAPI <code>/convert</code> service, Node CLI client, React ER
-          diagram UI, Docker, and bug-diagnosis branches.
-        </p>
-
-        <div class="docs-task-grid">
-          <div class="docs-task">
-            <div class="time">I1 · 45 min</div>
-            <h4>ER diagram from repo</h4>
-            <p>Mermaid diagram with source citations. UI at <code>/converter/er-diagram</code>.</p>
-          </div>
-          <div class="docs-task">
-            <div class="time">I2 · 45 min</div>
-            <h4>End-to-end flow trace</h4>
-            <p>Trace POST <code>/convert</code> through service layers with sequence diagram.</p>
-          </div>
-          <div class="docs-task">
-            <div class="time">I3 · 60 min</div>
-            <h4>Small safe change</h4>
-            <p>Make a scoped change with tests in an unfamiliar repo.</p>
-          </div>
-          <div class="docs-task">
-            <div class="time">I4 · 90 min</div>
-            <h4>Polyglot pair</h4>
-            <p>FastAPI service + Node CLI calling it. Two-terminal demo in README.</p>
-          </div>
-          <div class="docs-task">
-            <div class="time">I5</div>
-            <h4>Dockerize and run</h4>
-            <p>Build and run via Dockerfile. Doc in <code>docs/eval/intermediate/I5-docker.md</code>.</p>
-          </div>
-          <div class="docs-task">
-            <div class="time">I6</div>
-            <h4>Bug diagnosis</h4>
-            <p>Find and fix a seeded bug on branch <code>eval/i6-seeded-bug</code>.</p>
-          </div>
-        </div>
-
-        <div class="docs-callout">
-          Full task-to-file mapping lives in the repo root:
-          <code>EVAL_AND_PROJECTS_GUIDE.md</code> and <code>PROJECTS_DETAILED_GUIDE.txt</code>.
-        </div>
-      </article>
-
-      <!-- TAB 3: ADVANCED -->
-      <article id="docs-panel-advanced" class="docs-panel hidden" role="tabpanel">
-        <h2>Advanced eval tasks</h2>
-        <p>
-          Advanced tier tests parallel agent work, multi-language pipelines (FastAPI + Node worker +
-          Rust scorer), code review, modernization, and performance profiling. Two projects implement
-          the same eval patterns in different domains.
-        </p>
-
-        <figure class="docs-figure">
-          <img src="docs/assets/fraud-pipeline.svg" alt="Fraud score pipeline: FastAPI, Node worker, Rust scorer" />
-          <figcaption>Fraud Score System — fully local polyglot pipeline (contract v1.0)</figcaption>
-        </figure>
-
-        <figure class="docs-figure">
-          <img src="docs/assets/scraper-architecture.svg" alt="Screen scraper ops dashboard with live API and local gateway" />
-          <figcaption>Screen Scraper Ops — live API dashboard plus local A3 scorer gateway</figcaption>
-        </figure>
-
-        <h3>Two Advanced implementations</h3>
-        <div class="docs-table-wrap">
-          <table class="docs-table">
-            <thead>
-              <tr>
-                <th>Component</th>
-                <th>Fraud Score System</th>
-                <th>Screen Scraper Ops</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>FastAPI ingestion</td>
-                <td><code>POST /transactions</code> (:8002)</td>
-                <td><code>POST /jobs</code> gateway (:8003)</td>
-              </tr>
-              <tr>
-                <td>Node worker</td>
-                <td>Polls pending transactions</td>
-                <td>Polls gateway; optional live news ingest</td>
-              </tr>
-              <tr>
-                <td>Rust scorer</td>
-                <td>Transaction fraud score</td>
-                <td>Article relevance / risk score</td>
-              </tr>
-              <tr>
-                <td>UI evidence</td>
-                <td><code>/fraud/ui/</code> pipeline dashboard</td>
-                <td><code>/scraper/ops</code>, <code>/scraper/eval/advanced</code></td>
-              </tr>
-              <tr>
-                <td>Live external API</td>
-                <td>None (all local)</td>
-                <td>Scraper provider (VPN may be required)</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Advanced task list (A1–A6)</h3>
-        <div class="docs-task-grid">
-          <div class="docs-task">
-            <div class="time">A1 · 45 min</div>
-            <h4>Multi-worktree parallel plan</h4>
-            <p>Decompose work into lanes, agent prompts, merge order. Docs in <code>docs/eval/advanced/A1-parallel-plan.md</code>.</p>
-          </div>
-          <div class="docs-task">
-            <div class="time">A2 · 90 min</div>
-            <h4>Execute two parallel worktrees</h4>
-            <p><code>git worktree add</code>, merge, run tests. Evidence in <code>A2-worktrees.md</code>.</p>
-          </div>
-          <div class="docs-task">
-            <div class="time">A3 · 150 min</div>
-            <h4>Polyglot mini-system</h4>
-            <p>FastAPI + Node worker + Rust with shared <code>contract.json</code> and <code>make e2e</code>.</p>
-          </div>
-          <div class="docs-task">
-            <div class="time">A4 · 90 min</div>
-            <h4>Repository modernization</h4>
-            <p>Pin dependencies, add CI, document rollback in <code>A4-modernization.md</code>.</p>
-          </div>
-          <div class="docs-task">
-            <div class="time">A5 · 60 min</div>
-            <h4>Agent code review</h4>
-            <p>Review seeded PR branch for blocking/non-blocking issues. Never merge <code>review/agent-pr-seeded</code>.</p>
-          </div>
-          <div class="docs-task">
-            <div class="time">A6 · 90 min</div>
-            <h4>Performance profiling</h4>
-            <p>Benchmark hot path, document before/after. Scraper shows chart at <code>/scraper/analytics</code>.</p>
-          </div>
-        </div>
-
-        <h3>Team rules</h3>
-        <ul>
-          <li>Never mix the four project folders.</li>
-          <li>Ports: 8000 ledger · 8001 converter · 8002 fraud · 8003 scraper gateway.</li>
-          <li>Validate with <code>pytest</code>, <code>cargo test</code>, <code>make test</code>, <code>make e2e</code>.</li>
-          <li>VPN required for screen-scraper live API probes.</li>
-        </ul>
-      </article>
+      <article
+        id="docs-panel-eval-framework"
+        class="docs-panel docs-md-body"
+        role="tabpanel"
+        data-src="docs/content/eval-framework.md"
+      ></article>
+      <article
+        id="docs-panel-detailed-guide"
+        class="docs-panel docs-md-body hidden"
+        role="tabpanel"
+        data-src="docs/content/detailed-guide.md"
+      ></article>
+      <article
+        id="docs-panel-projects-overview"
+        class="docs-panel docs-md-body hidden"
+        role="tabpanel"
+        data-src="docs/content/projects-overview.md"
+      ></article>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="docs.js"></script>
   </body>
 </html>
