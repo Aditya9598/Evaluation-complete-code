@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+target/
+dist/
+
+# Secrets
+.env
+
+# Runtime
+.run-logs/
+.run-pids/
+
+# OS / editor
+.DS_Store
+*.swp
+
+# Duplicate / legacy folders
+Fraud-score-system-api/
+Fraud-score-system-scorer/
+ss-audio/
+ss-pipeline/
+eval-workspace-submission.zip

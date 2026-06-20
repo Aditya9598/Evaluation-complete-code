@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eval Workspace — Examiner Hub</title>
+    <link rel="stylesheet" href="hub.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <h1>Eval Workspace</h1>
+        <p>All four projects in one place for examiners</p>
+      </div>
+      <div class="meta">
+        <span id="mode-badge" class="badge">local</span>
+        <button type="button" id="refresh-health" class="btn">Refresh status</button>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist" aria-label="Projects">
+      <button type="button" class="tab active" data-tab="ledger" role="tab" aria-selected="true">
+        Transaction Ledger
+        <span class="tier">Basics</span>
+      </button>
+      <button type="button" class="tab" data-tab="converter" role="tab" aria-selected="false">
+        Currency Converter
+        <span class="tier">Intermediate</span>
+      </button>
+      <button type="button" class="tab" data-tab="fraud" role="tab" aria-selected="false">
+        Fraud Score System
+        <span class="tier">Advanced</span>
+      </button>
+      <button type="button" class="tab" data-tab="scraper" role="tab" aria-selected="false">
+        Screen Scraper Ops
+        <span class="tier">Advanced</span>
+      </button>
+    </nav>
+
+    <section class="toolbar">
+      <div class="links" id="project-links"></div>
+      <ul class="health" id="health-list" aria-live="polite"></ul>
+    </section>
+
+    <main class="frame-wrap">
+      <iframe
+        id="project-frame"
+        title="Project preview"
+        src="about:blank"
+        referrerpolicy="no-referrer-when-downgrade"
+      ></iframe>
+    </main>
+
+    <script src="config.js"></script>
+    <script src="hub.js"></script>
+  </body>
+</html>
