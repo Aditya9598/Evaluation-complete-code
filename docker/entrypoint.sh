@@ -19,15 +19,27 @@ trap shutdown SIGTERM SIGINT EXIT
 
 echo "[entrypoint] Starting transaction-ledger API + UI on :8000"
 cd "$APP_ROOT/transaction-ledger"
-uvicorn app.main:app --host "$BIND_HOST" --port 8000 &
+LEDGER_ARGS=(uvicorn app.main:app --host "$BIND_HOST" --port 8000)
+if [[ -n "$PUBLIC_PORT" ]]; then
+  LEDGER_ARGS+=(--root-path /ledger)
+fi
+"${LEDGER_ARGS[@]}" &
 
 echo "[entrypoint] Starting currency-converter API on :8001"
 cd "$APP_ROOT/currency-converter/service"
-uvicorn app.main:app --host "$BIND_HOST" --port 8001 &
+CONVERTER_ARGS=(uvicorn app.main:app --host "$BIND_HOST" --port 8001)
+if [[ -n "$PUBLIC_PORT" ]]; then
+  CONVERTER_ARGS+=(--root-path /converter-api)
+fi
+"${CONVERTER_ARGS[@]}" &
 
 echo "[entrypoint] Starting fraud-score API on :8002"
 cd "$APP_ROOT/Fraud-score-system/api"
-uvicorn app.main:app --host "$BIND_HOST" --port 8002 &
+FRAUD_ARGS=(uvicorn app.main:app --host "$BIND_HOST" --port 8002)
+if [[ -n "$PUBLIC_PORT" ]]; then
+  FRAUD_ARGS+=(--root-path /fraud)
+fi
+"${FRAUD_ARGS[@]}" &
 
 echo "[entrypoint] Starting fraud-score worker"
 cd "$APP_ROOT/Fraud-score-system/worker"
@@ -35,7 +47,11 @@ API_BASE_URL=http://127.0.0.1:8002 SCORER_BIN="$FRAUD_SCORER_BIN" node worker.js
 
 echo "[entrypoint] Starting screen-scraper gateway on :8003"
 cd "$APP_ROOT/screen-scraper/scorer-gateway"
-uvicorn app.main:app --host "$BIND_HOST" --port 8003 &
+GATEWAY_ARGS=(uvicorn app.main:app --host "$BIND_HOST" --port 8003)
+if [[ -n "$PUBLIC_PORT" ]]; then
+  GATEWAY_ARGS+=(--root-path /scraper-gateway)
+fi
+"${GATEWAY_ARGS[@]}" &
 
 echo "[entrypoint] Starting screen-scraper worker"
 cd "$APP_ROOT/screen-scraper/worker"

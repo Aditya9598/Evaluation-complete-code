@@ -142,7 +142,11 @@
 
       frame.addEventListener("load", finishLoading, { once: true });
       frame.addEventListener("error", finishLoading, { once: true });
-      window.setTimeout(finishLoading, 12000);
+      // Module-heavy SPAs may not fire iframe load promptly; hide overlay quickly on Railway.
+      if (config.mode === "railway") {
+        window.setTimeout(finishLoading, 400);
+      }
+      window.setTimeout(finishLoading, 2000);
 
       refreshHealth();
     }

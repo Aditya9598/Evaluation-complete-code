@@ -7,7 +7,7 @@
 #
 # Local Docker build (root-relative frontend paths):
 #   docker build --build-arg RAILWAY=false -t eval-workspace .
-# railway-deploy-v3: default RAILWAY=true + post-build asset path verification
+# railway-deploy-v4: uvicorn root-path for gateway-mounted API docs
 #
 # Local run:
 #   docker run --rm -p 8000:8000 -p 8001:8001 -p 8002:8002 -p 8003:8003 \
