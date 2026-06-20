@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 140" role="img" aria-label="Examiner hub layout">
+  <rect width="720" height="140" rx="12" fill="#151c26" stroke="#243044"/>
+  <rect x="16" y="16" width="688" height="36" rx="6" fill="#111820" stroke="#243044"/>
+  <text x="32" y="39" fill="#eef2f8" font-family="Inter, sans-serif" font-size="13" font-weight="600">Eval Workspace  Examiner Hub</text>
+  <rect x="16" y="60" width="688" height="28" rx="4" fill="#0b0f14" stroke="#243044"/>
+  <text x="40" y="79" fill="#4f8cff" font-family="Inter, sans-serif" font-size="11">Overview</text>
+  <text x="110" y="79" fill="#7d8da8" font-family="Inter, sans-serif" font-size="11">Ledger</text>
+  <text x="170" y="79" fill="#7d8da8" font-family="Inter, sans-serif" font-size="11">Converter</text>
+  <text x="250" y="79" fill="#7d8da8" font-family="Inter, sans-serif" font-size="11">Fraud</text>
+  <text x="300" y="79" fill="#7d8da8" font-family="Inter, sans-serif" font-size="11">Scraper</text>
+  <text x="640" y="79" fill="#eef2f8" font-family="Inter, sans-serif" font-size="11" font-weight="700">Docs</text>
+  <rect x="16" y="96" width="688" height="28" rx="4" fill="#ffffff" stroke="#243044"/>
+  <text x="360" y="115" text-anchor="middle" fill="#7d8da8" font-family="Inter, sans-serif" font-size="11">Project preview iframe</text>
+</svg>

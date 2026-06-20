@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 120" role="img" aria-label="Skill ladder from Basics to Advanced">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="720" y2="0">
+      <stop offset="0%" stop-color="#1a2330"/>
+      <stop offset="100%" stop-color="#151c26"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="120" rx="12" fill="url(#bg)" stroke="#243044"/>
+  <rect x="24" y="32" width="180" height="56" rx="28" fill="rgba(96,165,250,0.15)" stroke="#60a5fa"/>
+  <text x="114" y="66" text-anchor="middle" fill="#60a5fa" font-family="Inter, sans-serif" font-size="14" font-weight="600">Basics</text>
+  <text x="114" y="84" text-anchor="middle" fill="#b4c0d4" font-family="Inter, sans-serif" font-size="11">Transaction Ledger</text>
+  <text x="230" y="66" fill="#7d8da8" font-size="22">’</text>
+  <rect x="260" y="32" width="180" height="56" rx="28" fill="rgba(167,139,250,0.15)" stroke="#a78bfa"/>
+  <text x="350" y="66" text-anchor="middle" fill="#a78bfa" font-family="Inter, sans-serif" font-size="14" font-weight="600">Intermediate</text>
+  <text x="350" y="84" text-anchor="middle" fill="#b4c0d4" font-family="Inter, sans-serif" font-size="11">Currency Converter</text>
+  <text x="466" y="66" fill="#7d8da8" font-size="22">’</text>
+  <rect x="496" y="32" width="200" height="56" rx="28" fill="rgba(244,114,182,0.15)" stroke="#f472b6"/>
+  <text x="596" y="58" text-anchor="middle" fill="#f472b6" font-family="Inter, sans-serif" font-size="14" font-weight="600">Advanced</text>
+  <text x="596" y="78" text-anchor="middle" fill="#b4c0d4" font-family="Inter, sans-serif" font-size="11">Fraud Score + Scraper Ops</text>
+</svg>

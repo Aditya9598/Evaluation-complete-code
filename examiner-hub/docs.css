@@ -1,0 +1,234 @@
+@import url("hub.css");
+
+body.docs-page {
+  overflow: auto;
+}
+
+.docs-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.docs-back {
+  color: var(--accent-hover);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.docs-back:hover {
+  text-decoration: underline;
+}
+
+.docs-tabs {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.35rem 1rem 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+  overflow-x: auto;
+}
+
+.docs-tab {
+  appearance: none;
+  border: 1px solid transparent;
+  border-bottom: none;
+  background: transparent;
+  color: var(--muted);
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 0.86rem;
+  font-weight: 600;
+  font-family: inherit;
+}
+
+.docs-tab:hover {
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.docs-tab.active {
+  color: var(--text);
+  background: var(--bg);
+  border-color: var(--border);
+}
+
+.docs-main {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 1.75rem 1.5rem 3rem;
+}
+
+.docs-panel.hidden {
+  display: none;
+}
+
+.docs-panel h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.35rem;
+  font-weight: 650;
+}
+
+.docs-panel h3 {
+  margin: 1.75rem 0 0.65rem;
+  font-size: 1.05rem;
+  font-weight: 650;
+}
+
+.docs-panel p,
+.docs-panel li {
+  color: var(--text-secondary);
+  line-height: 1.65;
+  font-size: 0.92rem;
+}
+
+.docs-panel ul,
+.docs-panel ol {
+  padding-left: 1.25rem;
+}
+
+.docs-panel strong {
+  color: var(--text);
+}
+
+.docs-figure {
+  margin: 1.25rem 0 1.75rem;
+  padding: 0.75rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.docs-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+}
+
+.docs-figure figcaption {
+  margin-top: 0.65rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.docs-table-wrap {
+  overflow-x: auto;
+  margin: 1rem 0 1.5rem;
+}
+
+.docs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.docs-table th,
+.docs-table td {
+  border: 1px solid var(--border);
+  padding: 0.55rem 0.75rem;
+  text-align: left;
+}
+
+.docs-table th {
+  background: var(--panel);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.docs-table td {
+  color: var(--text-secondary);
+}
+
+.docs-table code {
+  font-family: ui-monospace, "SF Mono", monospace;
+  font-size: 0.78rem;
+  color: var(--accent-hover);
+}
+
+.docs-callout {
+  margin: 1.25rem 0;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(79, 140, 255, 0.35);
+  background: var(--accent-muted);
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.docs-task-grid {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.docs-task {
+  padding: 0.85rem 1rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.docs-task h4 {
+  margin: 0 0 0.35rem;
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+.docs-task p {
+  margin: 0;
+  font-size: 0.84rem;
+}
+
+.docs-task .time {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.docs-code {
+  margin: 1rem 0;
+  padding: 0.85rem 1rem;
+  background: #0a0e13;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+  font-family: ui-monospace, "SF Mono", monospace;
+  font-size: 0.78rem;
+  color: #c9d4e8;
+  line-height: 1.55;
+}
+
+.tier-tag {
+  display: inline-block;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-right: 0.35rem;
+}
+
+.tier-tag.basics {
+  background: var(--basics-muted);
+  color: var(--basics);
+}
+
+.tier-tag.intermediate {
+  background: var(--intermediate-muted);
+  color: var(--intermediate);
+}
+
+.tier-tag.advanced {
+  background: var(--advanced-muted);
+  color: var(--advanced);
+}
